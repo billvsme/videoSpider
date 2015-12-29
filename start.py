@@ -5,7 +5,7 @@ import pyquery
 import requests
 import models
 from models import Base
-from gevent import monkey;
+from gevent import monkey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -13,17 +13,24 @@ from sqlalchemy.ext.declarative import declarative_base
 # use gevent
 monkey.patch_socket()
 
-base_url = "http://movie.douban.com/j/search_subjects"
+get_subject_url = "http://movie.douban.com/j/search_subjects"
+get_tag_url = "http://movie.douban.com/j/search_tags"
 
 # url params
+types = ["movie", "tv"]
 tags = ["热门", "美剧", "英剧", "韩剧", "日剧", "港剧", "日本动画"]
 sorts = ["recommend", "time", "rank"]
-params = {
-    "type": "tv",
-    "tag": "热门",
-    "sort": "recommend",
-    "page_limit": "2000",
-    "page_start": "0"
+
+
+# get tags
+def get_tags(type_):
+    r = requests.get(get_tag_url, {"type": type_})
+    tags = r.json().get("tags")
+
+    return tags
+
+tags_dict = {
+    type_: get_tags(type_) for type_ in types
 }
 
 
@@ -33,8 +40,8 @@ config.read('./config.ini')
 
 # create database engine use config database url
 engine = create_engine(
-        config['database']['database_url'],
-        echo=config['database'].getboolean('test') or False
+    config['database']['database_url'],
+    echo=config['database'].getboolean('test') or False
 )
 
 # create table
@@ -50,10 +57,19 @@ douban_ids = set()
 for subject in subjects:
     douban_ids.add(subject.douban_id)
 
-def get_tv_datas(tag, sort):
-    params['tag'] = tag
-    params['sort'] = sort
-    r = requests.get(base_url, params=params)
+print("already in:", len(douban_ids))
+
+
+def get_tv_datas(type_, tag, sort):
+    params = {
+        "type": type_,
+        "tag": tag,
+        "sort": sort,
+        "page_limit": "2000",
+        "page_start": "0"
+    }
+
+    r = requests.get(get_subject_url, params=params)
     tv_json = r.json()
     tv_datas = tv_json['subjects']
 
@@ -73,15 +89,18 @@ def get_tv_datas(tag, sort):
                 douban_url=tv_data.get('url')
         )
         session.add(subject)
+        session.flush()
         douban_ids.add(tv_data.get("id"))
         print(len(douban_ids), tv_data.get('title'))
 
-    session.commit()
-
 
 threads = set()
-for tag in tags:
-    for sort in sorts:
-        threads.add(gevent.spawn(get_tv_datas, tag, sort))
+for type_ in types:
+    for tag in tags_dict[type_]:
+        for sort in sorts:
+            threads.add(gevent.spawn(get_tv_datas, type_, tag, sort))
 
 gevent.joinall(threads)
+
+session.commit()
+print("now in:", len(douban_ids))
