@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import configparser
 import gevent
+import os
 import pyquery
 import requests
 import models
@@ -36,7 +37,10 @@ tags_dict = {
 
 # read config.ini file
 config = configparser.ConfigParser()
-config.read('./config.ini')
+if os.path.exists('./config.ini'):
+    config.read('./config.ini')
+else:
+    config.read('./config_dev.ini')
 
 # create database engine use config database url
 engine = create_engine(
