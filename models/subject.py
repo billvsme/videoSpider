@@ -19,6 +19,9 @@ class Subject(Base):
     is_beetle_subject = Column(Boolean)
     rate = Column(String)
     douban_url = Column(String)
+    type_ = Column(String)
+    tag = Column(String)
+    sort = Column(String)
 
     created_at = Column(
             DateTime(timezone=True),

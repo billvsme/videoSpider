@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import configparser
 import gevent
 import os
 import pyquery
 import requests
 import models
+from config import config
 from models import Base
 from gevent import monkey
 from sqlalchemy import create_engine
@@ -34,13 +34,6 @@ tags_dict = {
     type_: get_tags(type_) for type_ in types
 }
 
-
-# read config.ini file
-config = configparser.ConfigParser()
-if os.path.exists('./config.ini'):
-    config.read('./config.ini')
-else:
-    config.read('./config_dev.ini')
 
 # create database engine use config database url
 engine = create_engine(
@@ -90,7 +83,10 @@ def get_tv_datas(type_, tag, sort):
                 is_new=tv_data.get('is_new'),
                 is_beetle_subject=tv_data.get('is_beetle_subject'),
                 rate=tv_data.get('rate'),
-                douban_url=tv_data.get('url')
+                douban_url=tv_data.get('url'),
+                type_ = type_,
+                tag = tag,
+                sort = sort
         )
         session.add(subject)
         session.flush()
