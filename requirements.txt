@@ -1,0 +1,5 @@
+SQLAlchemy==1.0.11
+alembic==0.8.4
+gevent==1.1b5
+pyquery==1.2.9
+requests==2.7.0
