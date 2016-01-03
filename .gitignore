@@ -60,3 +60,6 @@ target/
 
 # config
 config.ini
+
+# vim
+*.swp
