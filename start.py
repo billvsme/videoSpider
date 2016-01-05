@@ -58,12 +58,11 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-subjects = session.query(models.Subject)
-
 douban_ids = set()
 
-for subject in subjects:
-    douban_ids.add(subject.douban_id)
+for x,in session.query(models.Subject.id).all():
+    douban_ids.add(x)
+
 
 print("already in:", len(douban_ids))
 
