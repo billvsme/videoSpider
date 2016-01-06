@@ -7,14 +7,17 @@ import requests
 import string
 import models
 from config import config
-from models import Base
 from gevent import monkey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
+from helpers import random_str
+from resource import session
+
 # use gevent
 monkey.patch_socket()
+
 
 get_subject_url = "http://movie.douban.com/j/search_subjects"
 get_tag_url = "http://movie.douban.com/j/search_tags"
@@ -23,11 +26,6 @@ get_tag_url = "http://movie.douban.com/j/search_tags"
 types = ["movie", "tv"]
 tags = ["热门", "美剧", "英剧", "韩剧", "日剧", "港剧", "日本动画"]
 sorts = ["recommend", "time", "rank"]
-
-def random_str(randomlength=8):
-    a = list(string.ascii_letters)
-    random.shuffle(a)
-    return ''.join(a[:randomlength])
 
 # cookies
 cookies = {
@@ -45,18 +43,6 @@ tags_dict = {
     type_: get_tags(type_) for type_ in types
 }
 
-
-# create database engine use config database url
-engine = create_engine(
-    config['database']['database_url'],
-    echo=config['database'].getboolean('test') or False
-)
-
-# create table
-Base.metadata.create_all(engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
 
 douban_ids = set()
 
@@ -126,36 +112,13 @@ print("end base crawler============")
  
 from gevent.pool import Pool
 from pyquery import PyQuery as pq
-
-def text(douban_id):
-    if douban_id in douban_ids:
-        return
-    cookies['bid'] = random_str(11)
-    r = requests.get(subject_url + str(douban_id), cookies=cookies)
-    if r.status_code != 404:
-        d = pq(r.text)
-        title = d('#content h1 span').text()
-        print(douban_id, 'movie',r, title)
-        movie = models.Movie(
-                title=title
-        )
-        session.add(movie)
-    else:
-        r = requests.get(book_url + str(douban_id), cookies=cookies)
-        d = pq(r.text)
-        title = d('#wrapper h1 span').text()
-        print(douban_id, 'book',r, title)
-        book = models.Book(
-                title=title
-        )
-        session.add(book)
-    session.commit()
+from parsers import get_douban_movie
 
 pool = Pool(150)
 for douban_id in range(1291543, 26687572):
     if douban_id in douban_ids:
         continue
-    pool.spawn(text, douban_id)
+    pool.spawn(get_douban_movie, douban_id)
 
 print("====================")
 pool.join()
