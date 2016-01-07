@@ -6,4 +6,4 @@ from pyquery import PyQuery as pq
 from helpers import random_str
 from resource import session
 
-from .douban import get_douban_movie
+from . import douban

@@ -8,21 +8,21 @@ from parsers import session
 
 douban_movie_url = 'http://movie.douban.com/subject/'
 cookies = {
-    'bid': random_str(11),
+    'bid': '',
 }
 
 
-def get_douban_movie(douban_id):
+def get_douban_movies(url):
     cookies['bid'] = random_str(11)
-    r = requests.get(douban_movie_url + str(douban_id), cookies=cookies)
+    r = requests.get(url, cookies=cookies)
     if r.status_code != 404:
         d = pq(r.text)
         title = d('#content h1 span').text()
-        print(douban_id, 'movie', r, title)
+        print(url, 'movie', r, title)
         movie = models.Movie(
             title=title
         )
         session.add(movie)
     else:
-        print(douban_id, "is book.")
+        print(url, "is book.")
     session.commit()
