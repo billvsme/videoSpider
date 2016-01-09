@@ -2,4 +2,4 @@
 from webs import douban
 
 
-douban.start()
+douban.works.main_movies.start()
