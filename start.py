@@ -2,4 +2,4 @@
 from webs import douban
 
 
-douban.works.main_movies.start()
+douban.works.get_main_movies_base_data.start()

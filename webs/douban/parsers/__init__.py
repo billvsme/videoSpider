@@ -1,2 +1,2 @@
-from .movie import get_douban_movie_data
-from .douban_api import get_douban_main_movies_base_data
+from .movie import douban_movie_page
+from .douban_api import douban_movie_api

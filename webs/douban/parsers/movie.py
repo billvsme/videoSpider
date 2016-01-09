@@ -1,7 +1,7 @@
 from webs import pq
 
 
-def get_douban_movie_data(r):
+def douban_movie_page(r):
     data = {
         'title':'',
     }

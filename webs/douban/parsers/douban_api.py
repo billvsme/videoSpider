@@ -1,4 +1,4 @@
-def get_douban_main_movies_base_data(r):
+def douban_movie_api(r):
     datas = []
 
     movie_base_datas = r.json().get('subjects')

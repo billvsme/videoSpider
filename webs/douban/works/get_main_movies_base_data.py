@@ -43,7 +43,7 @@ def create_requests_and_save_datas(type, tag, sort):
     }
 
     r = requests.get(douban_movie_api_url, params=params, cookies=cookies)
-    datas = parsers.get_douban_main_movies_base_data(r)
+    datas = parsers.douban_movie_api(r)
 
     for data in datas:
         douban_id = data.get('douban_id')
