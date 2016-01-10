@@ -1,15 +1,11 @@
 import requests
 import gevent
-from gevent import monkey
-from gevent.pool import Pool
 
 from webs import session
 from webs import models
 from webs import random_str
 
 from webs.douban import parsers
-
-monkey.patch_socket()
 
 
 types = ['movie', 'tv']
@@ -20,8 +16,6 @@ tags_dict = {
 }
 
 douban_movie_api_url = 'http://movie.douban.com/j/search_subjects/'
-douban_movie_url = 'http://movie.douban.com/subject/'
-
 cookies = {
     'bid': ''
 }

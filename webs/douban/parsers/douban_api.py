@@ -33,6 +33,4 @@ def douban_movie_api(r):
         
         datas.append(data)
         
-    #from pprint import pprint
-    #pprint(datas)
     return datas
