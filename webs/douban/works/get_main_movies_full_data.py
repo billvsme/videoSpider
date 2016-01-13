@@ -19,7 +19,7 @@ def create_requests_and_save_datas(douban_id):
     cookies['bid'] = random_str(11)
     r = requests.get(douban_movie_url + str(douban_id), cookies=cookies)
     data = parsers.douban_movie_page(r)
-    print(douban_id,data['title'])
+    print(data)
 
 
 def start():

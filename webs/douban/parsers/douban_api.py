@@ -1,7 +1,12 @@
 def douban_movie_api(r):
     datas = []
 
-    movie_base_datas = r.json().get('subjects')
+    try:
+        movie_base_datas = r.json().get('subjects')
+    except:
+        print('==================')
+        print(r.status_code)
+        return datas
 
     for movie_base_data in movie_base_datas:
         data = {
@@ -30,7 +35,5 @@ def douban_movie_api(r):
         data['is_beetle_subject'] = movie_base_data.get('is_beetle_subject')
         data['rate'] = movie_base_data.get('rate')
         data['douban_url'] = movie_base_data.get('url')
-        
         datas.append(data)
-        
     return datas
