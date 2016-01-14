@@ -6,27 +6,21 @@ from .base import Base
 class Subject(Base):
     __tablename__ = 'subjects'
 
-    #id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True)
-    #id = Column(BigInteger, primary_key=True)
     id = Column(Integer, primary_key=True)
     douban_id = Column(String)
-    title = Column(String)
-    original_title = Column(String)
     douban_url = Column(String)
-    image = Column(String)
-    images = Column(String)
+    title = Column(String)
+    aliases = Column(String)
     cover = Column(String)
     cover_x = Column(Integer)
     cover_y = Column(Integer)
     is_new = Column(Boolean)
     is_beetle_subject = Column(Boolean)
-    rate = Column(String)
-    rating = Column(String)
-    ratings_count = Column(String)
-    wish_count = Column(String)
-    collect_count = Column(String)
-    do_count = Column(String)
+    douban_rate = Column(String)
+    douban_rating = Column(String)
+    douban_ratings_count = Column(String)
     summary = Column(String)
+    pubdate = Column(String)
 
     type = Column(String(50))
 

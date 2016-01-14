@@ -44,8 +44,8 @@ def create_requests_and_save_datas(type, tag, sort):
         if douban_id in douban_ids:
             continue
         data['subtype'] = type
-        data['tag'] = tag
-        data['sort'] = sort
+        data['crawler_tag'] = tag
+        data['crawler_sort'] = sort
 
         movie = models.Movie(**data)
         session.add(movie)
