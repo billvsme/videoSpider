@@ -1,5 +1,3 @@
-from webs import pq
-
 from bs4 import BeautifulSoup
 
 
