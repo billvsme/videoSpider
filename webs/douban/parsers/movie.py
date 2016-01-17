@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 
 
@@ -6,7 +7,8 @@ def get_celebrity_info(node):
     celebrities = [
         {
             'name': celebrity.string,
-            'url': celebrity['href']
+            'douban_url': celebrity['href'],
+            'douban_id': re.findall(r'\d+', celebrity['href'])[0] if re.match(r'/celebrity/\d+/',celebrity['href']) else None
         } for celebrity in celebrity_nodes
     ]
 

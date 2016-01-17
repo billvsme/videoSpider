@@ -22,20 +22,47 @@ def create_requests_and_save_datas(douban_id):
 
     data = parsers.douban_movie_page(r)
 
-    if 'directors' in data:
-        data.pop('directors')
-    if 'playwrights' in data:
-        data.pop('playwrights')
-    if 'actors' in data:
-        data.pop('actors')
+    movie = session.query(models.Movie).filter_by(douban_id=douban_id).one()
+
+    celebrity_query = session.query(models.Celebrity)
+
+    directors = data.pop('directors', [])
+    movie.directors.clear()
+    for director in directors:
+        celebrity_obj = celebrity_query.filter_by(douban_id=director['douban_id']).first()
+        if celebrity_obj is None:
+            celebrity_obj = models.Celebrity(**director)
+            session.add(celebrity_obj)
+            session.flush()
+        movie.directors.append(celebrity_obj)
+
+    playwrights = data.pop('playwrights', [])
+    movie.playwrights.clear()
+    for playwright in playwrights:
+        celebrity_obj = celebrity_query.filter_by(douban_id=playwright['douban_id']).first()
+        if celebrity_obj is None:
+            celebrity_obj = models.Celebrity(**playwright)
+            session.add(celebrity_obj)
+            session.flush()
+        movie.playwrights.append(celebrity_obj)
+
+    actors = data.pop('actors', [])
+    movie.actors.clear()
+    for actor in actors:
+        celebrity_obj = celebrity_query.filter_by(douban_id=actor['douban_id']).first()
+        if celebrity_obj is None:
+            celebrity_obj = models.Celebrity(**actor)
+            session.add(celebrity_obj)
+            session.flush()
+        movie.actors.append(celebrity_obj)
+
 
     for key in list(data.keys()):
         if type(data[key]) == list:
             data[key] = str(data[key])
 
-    # If use query.update(data), an error is raised, beacuse movie table is multiple table and we want to update movie table and subject table some columns.
-    movie = session.query(models.Movie).filter_by(douban_id=douban_id).one()
 
+    # If use query.update(data), an error is raised, beacuse movie table is multiple table and we want to update movie table and subject table some columns.
     for k, v in data.items():
         setattr(movie, k, v)
 
