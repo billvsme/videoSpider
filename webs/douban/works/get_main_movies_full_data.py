@@ -24,43 +24,52 @@ def create_requests_and_save_datas(douban_id):
 
     movie = session.query(models.Movie).filter_by(douban_id=douban_id).one()
 
-    celebrity_query = session.query(models.Celebrity)
-
     directors = data.pop('directors', [])
-    movie.directors.clear()
-    for director in directors:
-        celebrity_obj = celebrity_query.filter_by(douban_id=director['douban_id']).first()
-        if celebrity_obj is None:
-            celebrity_obj = models.Celebrity(**director)
-            session.add(celebrity_obj)
-            session.flush()
-        movie.directors.append(celebrity_obj)
-
+    director_douban_ids = set(director['douban_id'] for director in directors)
     playwrights = data.pop('playwrights', [])
-    movie.playwrights.clear()
-    for playwright in playwrights:
-        celebrity_obj = celebrity_query.filter_by(douban_id=playwright['douban_id']).first()
-        if celebrity_obj is None:
-            celebrity_obj = models.Celebrity(**playwright)
-            session.add(celebrity_obj)
-            session.flush()
-        movie.playwrights.append(celebrity_obj)
-
+    playwright_douban_ids = set(playwright['douban_id'] for playwright in playwrights)
     actors = data.pop('actors', [])
-    movie.actors.clear()
-    for actor in actors:
-        celebrity_obj = celebrity_query.filter_by(douban_id=actor['douban_id']).first()
-        if celebrity_obj is None:
-            celebrity_obj = models.Celebrity(**actor)
+    actor_douban_ids = set(actor['douban_id'] for actor in actors)
+    celebrities = directors + playwrights + actors
+    celebrity_douban_ids = director_douban_ids & playwright_douban_ids & actor_douban_ids
+
+    exist_celebrity_query = session.query(
+                               models.Celebrity
+                           ).filter(models.Celebrity.douban_id.in_(celebrity_douban_ids))
+
+    exist_celebrity_douban_ids = set()
+    douban_id_celebrity_obj_dict = {}
+
+    for celebrity_obj in exist_celebrity_query:
+        exist_celebrity_douban_ids.add(celebrity_obj.douban_id)
+        douban_id_celebrity_obj_dict[celebrity_obj.douban_id] = celebrity_obj
+
+    for celebrity in celebrities:
+        celebrity_douban_id = celebrity['douban_id']
+        if celebrity_douban_id is None:
+            continue
+        if celebrity_douban_id not in exist_celebrity_douban_ids:
+            celebrity_obj = models.Celebrity(**celebrity)
             session.add(celebrity_obj)
             session.flush()
-        movie.actors.append(celebrity_obj)
+            douban_id_celebrity_obj_dict[celebrity_douban_id] = celebrity_obj
+            exist_celebrity_douban_ids.add(celebrity_douban_id)
 
+    movie.directors.clear()
+    movie.playwrights.clear()
+    movie.actors.clear()
 
+    for celebrity_douban_id, celebrity_obj  in douban_id_celebrity_obj_dict.items():
+        if celebrity_douban_id in director_douban_ids:
+            movie.directors.append(celebrity_obj)
+        if celebrity_douban_id in playwright_douban_ids:
+            movie.playwrights.append(celebrity_obj)
+        if celebrity_douban_id in actor_douban_ids:
+            movie.actors.append(celebrity_obj)
+    
     for key in list(data.keys()):
         if type(data[key]) == list:
             data[key] = str(data[key])
-
 
     # If use query.update(data), an error is raised, beacuse movie table is multiple table and we want to update movie table and subject table some columns.
     for k, v in data.items():
