@@ -1,11 +1,12 @@
 import gipc
 import requests
 from gevent.pool import Pool
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
-from webs import session
 from webs import models
 from webs import random_str
 from webs.douban import parsers
+from resource import session
 
 from . import get_main_movies_base_data
 
@@ -20,9 +21,11 @@ def create_requests_and_save_datas(douban_id):
     cookies['bid'] = random_str(11)
     r = requests.get(douban_movie_url + str(douban_id), cookies=cookies, timeout=10)
 
-    data = parsers.douban_movie_page(r)
+    if r.status_code != 200:
+        return
 
-    movie = session.query(models.Movie).filter_by(douban_id=douban_id).one()
+    data = parsers.movie.start_parser(r.text)
+    data['douban_url'] = r.url
 
     directors = data.pop('directors', [])
     director_douban_ids = set(director['douban_id'] for director in directors)
@@ -31,30 +34,23 @@ def create_requests_and_save_datas(douban_id):
     actors = data.pop('actors', [])
     actor_douban_ids = set(actor['douban_id'] for actor in actors)
     celebrities = directors + playwrights + actors
-    celebrity_douban_ids = director_douban_ids & playwright_douban_ids & actor_douban_ids
+    celebrity_douban_ids = director_douban_ids | playwright_douban_ids | actor_douban_ids
 
-    exist_celebrity_query = session.query(
-                               models.Celebrity
-                           ).filter(models.Celebrity.douban_id.in_(celebrity_douban_ids))
-
-    exist_celebrity_douban_ids = set()
     douban_id_celebrity_obj_dict = {}
-
-    for celebrity_obj in exist_celebrity_query:
-        exist_celebrity_douban_ids.add(celebrity_obj.douban_id)
-        douban_id_celebrity_obj_dict[celebrity_obj.douban_id] = celebrity_obj
 
     for celebrity in celebrities:
         celebrity_douban_id = celebrity['douban_id']
-        if celebrity_douban_id is None:
-            continue
-        if celebrity_douban_id not in exist_celebrity_douban_ids:
-            celebrity_obj = models.Celebrity(**celebrity)
-            session.add(celebrity_obj)
-            session.flush()
+        if celebrity_douban_id is not None:
+            try:
+                celebrity_obj = models.Celebrity(**celebrity)
+                session.add(celebrity_obj)
+                session.commit()
+            except (IntegrityError, InvalidRequestError):
+                session.rollback()
+                celebrity_obj = session.query(models.Celebrity).filter_by(douban_id=celebrity_douban_id).first()
             douban_id_celebrity_obj_dict[celebrity_douban_id] = celebrity_obj
-            exist_celebrity_douban_ids.add(celebrity_douban_id)
 
+    movie = session.query(models.Movie).filter_by(douban_id=douban_id).one()
     movie.directors.clear()
     movie.playwrights.clear()
     movie.actors.clear()
@@ -79,27 +75,28 @@ def create_requests_and_save_datas(douban_id):
     print(douban_id, movie.title)
 
 
-def process_start(ids):
-    pool = Pool(100)
+def process_start(douban_ids, pool_number):
+    pool = Pool(pool_number)
 
-    for douban_id in ids:
+    for douban_id in douban_ids:
         pool.spawn(
             create_requests_and_save_datas,
-            douban_id=douban_id
+            douban_id=douban_id,
         )
 
     pool.join()
 
 
-def start():
-    get_main_movies_base_data.start()
-    all_ids = list(get_main_movies_base_data.douban_ids)
-    l = len(all_ids)
+def start_work(process_number=17, pool_number=100):
+    get_main_movies_base_data.start_work()
+    movie_douban_ids = list(get_main_movies_base_data.movie_douban_ids)
+
+    l = len(movie_douban_ids)
 
     processes = []
-    for x in range(0, l, l//4+1):
+    for x in range(0, l, l//process_number+1):
         processes.append(
-                gipc.start_process(target=process_start, args=(all_ids[x: x+l//4],))
+                gipc.start_process(target=process_start, args=(movie_douban_ids[x: x+l//process_number],pool_number))
         )
 
     for process in processes:

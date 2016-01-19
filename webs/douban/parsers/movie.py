@@ -61,30 +61,26 @@ def get_movie_info(node_dict):
     return movie_info
 
 
-def douban_movie_page(r):
+def start_parser(text):
     data = {
         'title': '',
     }
-    if r.status_code != 404:
-        s = BeautifulSoup(r.text, "lxml")
 
-        data['douban_url'] = r.url
-        data['title'] = s.select('#content h1 span')[0].string
-        data['genres'] = [x.string for x in s.find(id='info').find_all(property='v:genre')]
-        data['summary'] = s.find(property='v:summary').string if s.find(property='v:summary') != None else None
+    s = BeautifulSoup(text, "lxml")
 
-        class_pl_dict = {}
-        class_pl_nodes = s.select('.pl')
-        for node in class_pl_nodes:
-            dict_key = node.string
-            if dict_key is not None:
-                dict_key = dict_key[:-1] if dict_key.endswith(':') else dict_key
-                class_pl_dict[dict_key] = node
+    data['title'] = s.select('#content h1 span')[0].string
+    data['genres'] = [x.string for x in s.find(id='info').find_all(property='v:genre')]
+    data['summary'] = s.find(property='v:summary').string if s.find(property='v:summary') != None else None
 
-        data.update(get_movie_info(class_pl_dict))
-        data['douban_rate'] = s.select('.rating_num')[0].string
+    class_pl_dict = {}
+    class_pl_nodes = s.select('.pl')
+    for node in class_pl_nodes:
+        dict_key = node.string
+        if dict_key is not None:
+            dict_key = dict_key[:-1] if dict_key.endswith(':') else dict_key
+            class_pl_dict[dict_key] = node
 
-    else:
-        data = None
+    data.update(get_movie_info(class_pl_dict))
+    data['douban_rate'] = s.select('.rating_num')[0].string
 
     return data

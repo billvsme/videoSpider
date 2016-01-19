@@ -8,7 +8,7 @@ monkey.patch_socket()
 
 start = time.time()
 
-douban.works.get_main_movies_full_data.start()
+douban.works.get_main_movies_full_data.start_work()
 
 end = time.time()
 

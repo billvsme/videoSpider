@@ -1,11 +1,11 @@
 import requests
 import gevent
+from sqlalchemy.orm import sessionmaker
 
-from webs import session
 from webs import models
 from webs import random_str
-
 from webs.douban import parsers
+from resource import session
 
 
 types = ['movie', 'tv']
@@ -20,10 +20,12 @@ cookies = {
     'bid': ''
 }
 
-douban_ids = set()
+movie_douban_ids = set()
 
-for x, in session.query(models.Subject.douban_id).all():
-    douban_ids.add(x)
+movie_query = session.query(models.Movie.douban_id)
+
+for douban_id, in movie_query:
+    movie_douban_ids.add(douban_id)
 
 
 def create_requests_and_save_datas(type, tag, sort):
@@ -36,12 +38,15 @@ def create_requests_and_save_datas(type, tag, sort):
         'page_start': 0
     }
 
-    r = requests.get(douban_movie_api_url, params=params, cookies=cookies)
-    datas = parsers.douban_movie_api(r)
+    r = requests.get(douban_movie_api_url, params=params, cookies=cookies, timeout=20)
+
+    if r.status_code != 200:
+        return
+    datas = parsers.douban_api.start_parser(r.text)
 
     for data in datas:
         douban_id = data.get('douban_id')
-        if douban_id in douban_ids:
+        if douban_id in movie_douban_ids:
             continue
         data['subtype'] = type
         data['crawler_tag'] = tag
@@ -50,11 +55,12 @@ def create_requests_and_save_datas(type, tag, sort):
         movie = models.Movie(**data)
         session.add(movie)
         session.commit()
-        douban_ids.add(douban_id)
+        movie_douban_ids.add(douban_id)
         print(douban_id, data.get('title'))
 
-def start():
-    threads = set() 
+def start_work():
+    threads = set()
+
     for type in types:
         for tag in tags_dict[type]:
             for sort in sorts:

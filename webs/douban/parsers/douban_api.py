@@ -1,13 +1,9 @@
-def douban_movie_api(r):
+import json
+
+def start_parser(text):
     datas = []
 
-    try:
-        movie_base_datas = r.json().get('subjects')
-    except:
-        print('Error ==================')
-        print(r.status_code)
-        return datas
-
+    movie_base_datas = json.loads(text).get('subjects', [])
     for movie_base_data in movie_base_datas:
         data = {}
         data['douban_id'] = movie_base_data.get('id')
@@ -21,4 +17,5 @@ def douban_movie_api(r):
         data['douban_rate'] = movie_base_data.get('rate')
         data['douban_url'] = movie_base_data.get('url')
         datas.append(data)
+
     return datas

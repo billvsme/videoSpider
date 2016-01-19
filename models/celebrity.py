@@ -25,7 +25,7 @@ class Celebrity(Base):
     __tablename__ = 'celebrities'
 
     id = Column(Integer, primary_key=True)
-    douban_id = Column(String)
+    douban_id = Column(String, unique=True)
     douban_url = Column(String)
     name = Column(String)
     name_en = Column(String)
