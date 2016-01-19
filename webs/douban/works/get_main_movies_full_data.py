@@ -87,7 +87,7 @@ def process_start(douban_ids, pool_number):
     pool.join()
 
 
-def start_work(process_number=17, pool_number=100):
+def start_work(process_number=4, pool_number=100):
     get_main_movies_base_data.start_work()
     movie_douban_ids = list(get_main_movies_base_data.movie_douban_ids)
 
