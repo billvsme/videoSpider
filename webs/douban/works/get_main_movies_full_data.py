@@ -6,12 +6,12 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from webs import models
 from webs import random_str
 from webs.douban import parsers
-from resource import session
-
+from resource import session, engine
 from . import get_main_movies_base_data
 
 
 douban_movie_url = 'http://movie.douban.com/subject/'
+douban_celebrity_url = 'http://movie.douban.com/celebrity/'
 cookies = {
     'bid': ''
 }
@@ -72,10 +72,11 @@ def create_requests_and_save_datas(douban_id):
         setattr(movie, k, v)
 
     session.commit()
-    print(douban_id, movie.title)
+    print('movie', douban_id, movie.title)
 
 
 def process_start(douban_ids, pool_number):
+    engine.dispose()
     pool = Pool(pool_number)
 
     for douban_id in douban_ids:
@@ -87,10 +88,12 @@ def process_start(douban_ids, pool_number):
     pool.join()
 
 
-def start_work(process_number=4, pool_number=100):
-    get_main_movies_base_data.start_work()
-    movie_douban_ids = list(get_main_movies_base_data.movie_douban_ids)
+def start_work(process_number=4, pool_number=50):
+    movie_douban_ids = []
+    for movie_douban_id, in session.query(models.Movie.douban_id).all():
+        movie_douban_ids.append(movie_douban_id)
 
+    movie_douban_ids = movie_douban_ids
     l = len(movie_douban_ids)
 
     processes = []

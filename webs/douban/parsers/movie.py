@@ -7,7 +7,7 @@ def get_celebrity_info(node):
     celebrities = [
         {
             'name': celebrity.string,
-            'douban_url': celebrity['href'],
+            #'douban_url': celebrity['href'],
             'douban_id': re.findall(r'\d+', celebrity['href'])[0] if re.match(r'/celebrity/\d+/',celebrity['href']) else None
         } for celebrity in celebrity_nodes
     ]
@@ -72,15 +72,15 @@ def start_parser(text):
     data['genres'] = [x.string for x in s.find(id='info').find_all(property='v:genre')]
     data['summary'] = s.find(property='v:summary').string if s.find(property='v:summary') != None else None
 
-    class_pl_dict = {}
-    class_pl_nodes = s.select('.pl')
-    for node in class_pl_nodes:
+    info_node_dict = {}
+    info_nodes = s.select('.pl')
+    for node in info_nodes:
         dict_key = node.string
         if dict_key is not None:
             dict_key = dict_key[:-1] if dict_key.endswith(':') else dict_key
-            class_pl_dict[dict_key] = node
+            info_node_dict[dict_key] = node
 
-    data.update(get_movie_info(class_pl_dict))
+    data.update(get_movie_info(info_node_dict))
     data['douban_rate'] = s.select('.rating_num')[0].string
 
     return data

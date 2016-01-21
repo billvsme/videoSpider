@@ -1,11 +1,10 @@
 import requests
 import gevent
-from sqlalchemy.orm import sessionmaker
 
 from webs import models
 from webs import random_str
 from webs.douban import parsers
-from resource import session
+from resource import engine, session
 
 
 types = ['movie', 'tv']

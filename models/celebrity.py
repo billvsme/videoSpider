@@ -29,15 +29,20 @@ class Celebrity(Base):
     douban_url = Column(String)
     name = Column(String)
     name_en = Column(String)
+    aliases = Column(String)
+    aliases_en = Column(String)
+    sex = Column(String)
     cover = Column(String)
     website = Column(String)
     gender = Column(String)
     birthday = Column(String)
     born_place = Column(String)
+    family = Column(String)
     professions = Column(String)
     constellation = Column(String)
     photos = Column(String)
     imdb_number = Column(String)
+    summary = Column(String)
 
     director_subjects = relationship("Subject",
         secondary=subject_director_table,
