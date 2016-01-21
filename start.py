@@ -7,8 +7,10 @@ from webs import douban
 
 
 if __name__ == '__main__':
-
     start = time.time()
+
+    if len(sys.argv)  == 1:
+        os.system('python start.py full')
     if sys.argv[1] == 'base':
         douban.works.get_main_movies_base_data.start_work()
 
@@ -29,5 +31,3 @@ if __name__ == '__main__':
         end = time.time()
         print('use {}s'.format(end-start))
 
-    if len(sys.argv)  == 1:
-        os.system('python start.py full')
