@@ -124,7 +124,7 @@ def process_start(douban_ids, pool_number):
     pool.join()
 
 
-def start_work(process_number=4, pool_number=50):
+def start_work(process_number=2, pool_number=50):
     movie_douban_ids = []
     for movie_douban_id, in session.query(models.Movie.douban_id).all():
         movie_douban_ids.append(movie_douban_id)
