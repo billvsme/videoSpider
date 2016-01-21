@@ -27,22 +27,37 @@ def get_movie_info(node_dict):
         movie_info['actors'] = get_celebrity_info(node_dict['主演'])
 
     if '类型' in node_dict:
-        types = []
+        genres = []
         node = node_dict['类型']
+        node = node.next_sibling
         while(node.name != 'br'):
             if node.name == 'span':
-                types.append(node.string)
+                genres.append(
+                        {
+                            'name': node.string
+                        }
+                )
             node = node.next_sibling
 
-        movie_info['types'] = types
+        movie_info['genres'] = genres
 
     if '官方网站' in node_dict:
         movie_info['official_site'] = node_dict['官方网站'].next_sibling.next_sibling.get('href')
 
     if '制片国家/地区' in node_dict:
         movie_info['countries'] = [
-            name.strip() for name in node_dict['制片国家/地区'].next_sibling.string.split('/')
+            {
+                'name': name.strip()
+            } for name in node_dict['制片国家/地区'].next_sibling.string.split('/')
         ]
+
+    if '语言' in node_dict:
+        movie_info['languages'] = [
+            {
+                'name': name.strip()
+            } for name in node_dict['语言'].next_sibling.string.split('/')
+        ]
+
 
     if '上映日期' in node_dict:
         movie_info['pubdate'] = node_dict['上映日期'].next_sibling.next_sibling.string
@@ -69,8 +84,9 @@ def start_parser(text):
     s = BeautifulSoup(text, "lxml")
 
     data['title'] = s.select('#content h1 span')[0].string
-    data['genres'] = [x.string for x in s.find(id='info').find_all(property='v:genre')]
     data['summary'] = s.find(property='v:summary').string if s.find(property='v:summary') != None else None
+    data['douban_rate'] = s.select('.rating_num')[0].string
+    data['photos'] = [photo.get('src') for photo in s.find(id='related-pic').find_all('img')]
 
     info_node_dict = {}
     info_nodes = s.select('.pl')
@@ -81,6 +97,5 @@ def start_parser(text):
             info_node_dict[dict_key] = node
 
     data.update(get_movie_info(info_node_dict))
-    data['douban_rate'] = s.select('.rating_num')[0].string
 
     return data

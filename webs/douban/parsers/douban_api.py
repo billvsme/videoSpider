@@ -9,7 +9,6 @@ def start_parser(text):
         data['douban_id'] = movie_base_data.get('id')
         data['title'] = movie_base_data.get('title')
         data['cover'] = movie_base_data.get('cover')
-        data['cover'] = movie_base_data.get('cover')
         data['cover_x'] = movie_base_data.get('cover_x')
         data['cover_y'] = movie_base_data.get('cover_y')
         data['playable'] = movie_base_data.get('playable')

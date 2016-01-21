@@ -62,14 +62,50 @@ def create_requests_and_save_datas(douban_id):
             movie.playwrights.append(celebrity_obj)
         if celebrity_douban_id in actor_douban_ids:
             movie.actors.append(celebrity_obj)
-    
-    for key in list(data.keys()):
-        if type(data[key]) == list:
-            data[key] = str(data[key])
+
+    session.commit()
 
     # If use query.update(data), an error is raised, beacuse movie table is multiple table and we want to update movie table and subject table some columns.
+
+    movie.genres.clear()
+    movie.countries.clear()
+    movie.languages.clear()
+    session.commit()
     for k, v in data.items():
-        setattr(movie, k, v)
+        if k == 'genres':
+            for movie_genre in v:
+                try:
+                    movie_genre_obj = models.MovieGenre(**movie_genre)
+                    session.add(movie_genre_obj)
+                    session.commit()
+                except (IntegrityError, InvalidRequestError):
+                    session.rollback()
+                    movie_genre_obj = session.query(models.MovieGenre).filter_by(name=movie_genre['name']).one()
+                movie.genres.append(movie_genre_obj)
+        elif k == 'countries':
+            for movie_country in v:
+                try:
+                    movie_country_obj = models.MovieCountry(**movie_country)
+                    session.add(movie_country_obj)
+                    session.commit()
+                except (IntegrityError, InvalidRequestError):
+                    session.rollback()
+                    movie_country_obj = session.query(models.MovieCountry).filter_by(name=movie_country['name']).one()
+                movie.countries.append(movie_country_obj)
+        elif k == 'languages':
+            for movie_language in v:
+                try:
+                    movie_language_obj = models.MovieLanguage(**movie_language)
+                    session.add(movie_language_obj)
+                    session.commit()
+                except (IntegrityError, InvalidRequestError):
+                    session.rollback()
+                    movie_language_obj = session.query(models.MovieLanguage).filter_by(name=movie_language['name']).one()
+                movie.languages.append(movie_language_obj)
+        else:
+            if k == 'aliases' or k == 'photos':
+                v = str(v)
+            setattr(movie, k, v)
 
     session.commit()
     print('movie', douban_id, movie.title)

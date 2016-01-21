@@ -14,9 +14,9 @@ def get_celebrity_info(info_node_dict):
     if '职业' in info_node_dict:
         celebrity_info['professions'] = info_node_dict['职业'].span.next_sibling.string.strip(': \n')
     if '更多中文名' in info_node_dict:
-        celebrity_info['alias'] = info_node_dict['更多中文名'].span.next_sibling.string.strip(': \n')
+        celebrity_info['aliases'] = info_node_dict['更多中文名'].span.next_sibling.string.strip(': \n')
     if '更多外文名' in info_node_dict:
-        celebrity_info['alias_en'] = info_node_dict['更多外文名'].span.next_sibling.string.strip(': \n')
+        celebrity_info['aliases_en'] = info_node_dict['更多外文名'].span.next_sibling.string.strip(': \n')
     if '家庭成员' in info_node_dict:
         celebrity_info['family'] = info_node_dict['家庭成员'].span.next_sibling.string.strip(': \n')
     if 'imdb编号' in info_node_dict:
@@ -33,6 +33,7 @@ def start_parser(text):
     data['name'] = s.select('#content h1')[0].string
     data['cover'] = s.select('.nbg img')[0].get('src')
     data['summary'] = s.select('#intro .bd')[0].text.strip('\n\u3000 ')
+    data['photos'] = [photo.get('src') for photo in s.select('#intro + .mod')[0].find_all('img')]
 
     info_node_dict = {}
     info_nodes = s.find(class_='info').find_all('li')
