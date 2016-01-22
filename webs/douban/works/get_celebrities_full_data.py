@@ -1,6 +1,6 @@
-import gipc
 import models
 import requests
+import multiprocessing
 
 from helpers import random_str
 from resource import session, engine
@@ -51,20 +51,18 @@ def process_start(douban_ids, pool_number):
     pool.join()
 
 
-def start_work(process_number=2, pool_number=50):
+def start_work(process_number=None, pool_number=50):
     celebrity_douban_ids = []
     
     for celebrity_douban_id, in session.query(models.Celebrity.douban_id):
         celebrity_douban_ids.append(celebrity_douban_id)
 
-    l = len(celebrity_douban_ids)
+    celebrity_size = len(celebrity_douban_ids)
 
-    processes = []
+    p = multiprocessing.Pool(processes=process_number)
+    process_number = p._processes
+    for x in range(0, celebrity_size, celebrity_size//process_number+1):
+        p.apply_async(process_start, args=(celebrity_douban_ids[x:x+celebrity_size//process_number], pool_number))
 
-    for x in range(0, l, l//process_number+1):
-        processes.append(
-                gipc.start_process(target=process_start, args=(celebrity_douban_ids[x:x+l//process_number], pool_number))
-        )
-
-    for process in processes:
-        process.join()
+    p.close()
+    p.join()
