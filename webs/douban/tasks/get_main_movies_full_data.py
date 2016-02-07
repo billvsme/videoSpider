@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from webs import models
 from webs import random_str
 from webs.douban import parsers
-from resource import session, engine
+from config import session
 from . import get_main_movies_base_data
 
 
@@ -108,11 +108,14 @@ def create_requests_and_save_datas(douban_id):
             setattr(movie, k, v)
 
     session.commit()
-    print('movie', douban_id, movie.title)
+
+    print(','.join(
+        ['movie', douban_id, movie.title]
+    ))
 
 
-def process_start(douban_ids, pool_number):
-    engine.dispose()
+def task(douban_ids, pool_number):
+    #engine.dispose()
     pool = Pool(pool_number)
 
     for douban_id in douban_ids:
@@ -124,6 +127,7 @@ def process_start(douban_ids, pool_number):
     pool.join()
 
 
+'''
 def start_work(process_number=None, pool_number=50):
     movie_douban_ids = []
     for movie_douban_id, in session.query(models.Movie.douban_id).all():
@@ -140,3 +144,4 @@ def start_work(process_number=None, pool_number=50):
 
     p.close()
     p.join()
+'''

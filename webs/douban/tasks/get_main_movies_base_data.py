@@ -4,7 +4,7 @@ import gevent
 from webs import models
 from webs import random_str
 from webs.douban import parsers
-from resource import engine, session
+from config import session
 
 
 types = ['movie', 'tv']
@@ -55,9 +55,12 @@ def create_requests_and_save_datas(type, tag, sort):
         session.add(movie)
         session.commit()
         movie_douban_ids.add(douban_id)
-        print(douban_id, data.get('title'))
+        print(','.join(
+                [douban_id ,data.get('title')]
+            ))
 
-def start_work():
+
+def task():
     threads = set()
 
     for type in types:
@@ -71,3 +74,5 @@ def start_work():
                 ))
 
     gevent.joinall(threads)
+
+    return list(movie_douban_ids)
