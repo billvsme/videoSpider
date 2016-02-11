@@ -18,4 +18,13 @@ def movie_full_task(douban_ids, pool_number):
         douban.tasks.get_main_movies_full_data.task(douban_ids, pool_number)
     except:
         print('Error ***************************')
-        self.retry(countdown=10)
+        raise movie_full_task.retry(countdown=10)
+
+@app.task
+def down_images_task(douban_ids, pool_number):
+    try:
+        douban.tasks.down_images.task(douban_ids, pool_number)
+    except:
+        print('Error ***************************')
+        raise down_images_task.retry(countdown=10)
+

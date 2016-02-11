@@ -4,7 +4,7 @@ import gevent
 from webs import models
 from webs import random_str
 from webs.douban import parsers
-from config import session
+from config import sqla
 
 
 types = ['movie', 'tv']
@@ -21,6 +21,7 @@ cookies = {
 
 movie_douban_ids = set()
 
+session = sqla['session']
 movie_query = session.query(models.Movie.douban_id)
 
 for douban_id, in movie_query:
@@ -28,6 +29,7 @@ for douban_id, in movie_query:
 
 
 def create_requests_and_save_datas(type, tag, sort):
+    session = sqla['session']
     cookies['bid'] = random_str(11)
     params = {
         'type': type,

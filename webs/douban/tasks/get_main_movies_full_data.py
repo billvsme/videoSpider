@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from webs import models
 from webs import random_str
 from webs.douban import parsers
-from config import session
+from config import sqla
 from . import get_main_movies_base_data
 
 
@@ -18,6 +18,7 @@ cookies = {
 
 
 def create_requests_and_save_datas(douban_id):
+    session = sqla['session']
     cookies['bid'] = random_str(11)
     r = requests.get(douban_movie_url + str(douban_id), cookies=cookies, timeout=10)
 
