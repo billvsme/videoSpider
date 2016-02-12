@@ -32,6 +32,9 @@ class Movie(Subject):
     year = Column(String)
     current_season = Column(Integer)
     photos = Column(String)
+    thumbnail_photos = Column(String)
+    wallpapers = Column(String)
+    thumbnail_wallpapers = Column(String)
     playable = Column(Boolean)
 
     crawler_tag = Column(String)

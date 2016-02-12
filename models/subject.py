@@ -14,6 +14,8 @@ class Subject(Base):
     cover = Column(String)
     cover_x = Column(Integer)
     cover_y = Column(Integer)
+    thumbnail_covers = Column(String)
+    covers = Column(String)
     is_new = Column(Boolean)
     is_beetle_subject = Column(Boolean)
     douban_rate = Column(String)

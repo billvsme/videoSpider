@@ -86,7 +86,7 @@ def start_parser(text):
     data['title'] = s.select('#content h1 span')[0].string
     data['summary'] = s.find(property='v:summary').string if s.find(property='v:summary') != None else None
     data['douban_rate'] = s.select('.rating_num')[0].string
-    data['photos'] = [photo.get('src') for photo in s.find(id='related-pic').find_all('img')]
+    data['thumbnail_photos'] = [photo.get('src') for photo in s.find(id='related-pic').find_all('img')]
 
     info_node_dict = {}
     info_nodes = s.select('.pl')

@@ -39,7 +39,7 @@ engine = create_new_engine()
 Session = sessionmaker(bind=engine)
 session = Session()
 
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
 
 
 '''Why use a dict save engine and session?
