@@ -72,13 +72,14 @@ def create_requests_and_save_datas(douban_id):
     movie.countries.clear()
     movie.languages.clear()
     session.commit()
+
     for k, v in data.items():
         if k == 'genres':
             for movie_genre in v:
                 try:
                     movie_genre_obj = models.MovieGenre(**movie_genre)
                     session.add(movie_genre_obj)
-                    session.commit()
+                    session.commit()    
                 except (IntegrityError, InvalidRequestError):
                     session.rollback()
                     movie_genre_obj = session.query(models.MovieGenre).filter_by(name=movie_genre['name']).one()
@@ -103,7 +104,13 @@ def create_requests_and_save_datas(douban_id):
                     session.rollback()
                     movie_language_obj = session.query(models.MovieLanguage).filter_by(name=movie_language['name']).one()
                 movie.languages.append(movie_language_obj)
-        else:
+        session.commit()
+
+    '''Why set other value not in above for cycle?
+    Beacuse above "for cycle" have rollback.
+    '''
+    for k, v in data.items():
+        if k!= 'genres' and k!='countries' and k!='languages':
             if k == 'aliases' or k == 'photos':
                 v = str(v)
             setattr(movie, k, v)
@@ -113,6 +120,7 @@ def create_requests_and_save_datas(douban_id):
     print(','.join(
         ['movie', douban_id, movie.title]
     ))
+
 
 
 def task(douban_ids, pool_number):
@@ -126,23 +134,3 @@ def task(douban_ids, pool_number):
         )
 
     pool.join()
-
-
-'''
-def start_work(process_number=None, pool_number=50):
-    movie_douban_ids = []
-    for movie_douban_id, in session.query(models.Movie.douban_id).all():
-        movie_douban_ids.append(movie_douban_id)
-
-    movie_size = len(movie_douban_ids)
-
-    p = multiprocessing.Pool(processes=process_number)
-    process_number = p._processes
-
-    engine.dispose()
-    for x in range(0, movie_size, movie_size//process_number+1):
-        p.apply_async(process_start, args=(movie_douban_ids[x: x+movie_size//process_number], pool_number))
-
-    p.close()
-    p.join()
-'''

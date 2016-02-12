@@ -1,7 +1,7 @@
 import sys
-from celery import Celery
+from celery import Celery, group
 from webs import douban
-from gevent import monkey;
+from gevent import monkey
 monkey.patch_socket()
 
 
@@ -18,7 +18,7 @@ def movie_full_task(douban_ids, pool_number):
         douban.tasks.get_main_movies_full_data.task(douban_ids, pool_number)
     except:
         print('Error ***************************')
-        raise movie_full_task.retry(countdown=10)
+        movie_full_task.retry(countdown=10)
 
 @app.task
 def down_images_task(douban_ids, pool_number):
@@ -26,5 +26,18 @@ def down_images_task(douban_ids, pool_number):
         douban.tasks.down_images.task(douban_ids, pool_number)
     except:
         print('Error ***************************')
-        raise down_images_task.retry(countdown=10)
+        down_images_task.retry(countdown=10)
 
+
+def get_douban_task_group(douban_ids, douban_task, group_size=20):
+    douban_size = len(douban_ids)
+    douban_subtasks = [
+        douban_task.s(
+            douban_ids[x: x+group_size],
+            group_size
+        ) for x in range(0, douban_size, group_size)
+    ]
+
+    g = group(douban_subtasks)
+
+    return g

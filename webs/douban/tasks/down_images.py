@@ -1,6 +1,6 @@
 import ast
 import requests
-from config import session
+from config import sqla
 from gevent.pool import Pool
 from webs import random_str
 from webs import models
@@ -15,6 +15,7 @@ def down(url, filename):
         f.write(r.content)
 
 def create_requests_and_save_datas(douban_id):
+    session = sqla['session']
     cookies['bid'] = random_str(11)
     subject = session.query(models.Subject).filter_by(douban_id=douban_id).one()
 

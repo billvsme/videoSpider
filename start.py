@@ -8,7 +8,14 @@ monkey.patch_os()
 from webs import douban
 
 from celery import group
-from tasks import movie_base_task, movie_full_task, down_images_task
+from tasks import movie_base_task, movie_full_task, down_images_task, get_douban_task_group
+
+
+def print_progress(async_result):
+    completed_count = 0
+    while(completed_count != len(async_result)):
+        completed_count = async_result.completed_count()
+        print(completed_count/len(async_result))
 
 
 if __name__ == '__main__':
@@ -16,57 +23,28 @@ if __name__ == '__main__':
 
     if sys.argv[1] == 'celery':
         douban_ids = movie_base_task.delay().get()
-
         
         start = time.time()
+        g = get_douban_task_group(douban_ids, movie_full_task)
 
-        movie_size = len(douban_ids)
-        process_number = 20
-
-        movie_full_subtasks = [
-            movie_full_task.s(
-                douban_ids[x : x+process_number],
-                process_number
-            ) for x in range(0, movie_size, process_number)
-        ]
-
-        g = group(movie_full_subtasks)
-
-        t = g.apply_async()
-
-
-        completed_count = 0
-        while(completed_count != len(movie_full_subtasks)):
-            completed_count = t.completed_count()
-            print(completed_count/len(movie_full_subtasks))
+        async_result = g.apply_async()
+        
+        print_progress(async_result)
 
         end = time.time()
 
         print('use {}s'.format(end-start))
 
     elif sys.argv[1] == 'image':
-        douban_ids = movie_base_task.delay().get()
+        from webs.douban.tasks.get_main_movies_base_data import movie_douban_ids as douban_ids
+
+        douban_ids = list(douban_ids)
         start = time.time()
-        movie_size = len(douban_ids)
+        g = get_douban_task_group(douban_ids, down_images_task, group_size=5)
 
-        process_number = 5
+        async_result = g.apply_async()
 
-        movie_full_subtasks = [
-            down_images_task.s(
-                douban_ids[x : x+process_number],
-                process_number
-            ) for x in range(0, movie_size, process_number)
-        ]
-
-        g = group(movie_full_subtasks)
-
-        t = g.apply_async()
-
-
-        completed_count = 0
-        while(completed_count != len(movie_full_subtasks)):
-            completed_count = t.completed_count()
-            print(completed_count/len(movie_full_subtasks))
+        print_progress(async_result)
 
         end = time.time()
 
