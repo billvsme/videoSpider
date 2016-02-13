@@ -33,6 +33,7 @@ class Celebrity(Base):
     aliases_en = Column(String)
     sex = Column(String)
     cover = Column(String)
+    thumbnail_cover = Column(String)
     website = Column(String)
     gender = Column(String)
     birthday = Column(String)
@@ -41,6 +42,7 @@ class Celebrity(Base):
     professions = Column(String)
     constellation = Column(String)
     photos = Column(String)
+    thumbnail_photos = Column(String)
     imdb_number = Column(String)
     summary = Column(String)
 
