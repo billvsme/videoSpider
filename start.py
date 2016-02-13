@@ -35,10 +35,12 @@ if __name__ == '__main__':
         async_result = g.apply_async()
         
         print('Start get movie full data:')
-        print_progress(async_result, 'get move full data')
+        print_progress(async_result, 'get movie full data')
 
 
     elif sys.argv[1] == 'image':
+        print('Start down movie images(about use 10+h, 40G):')
+        print_progress(async_result, "down movie images")
         from webs.douban.tasks.get_main_movies_base_data import movie_douban_ids as douban_ids
 
         douban_ids = list(douban_ids)
@@ -46,4 +48,3 @@ if __name__ == '__main__':
 
         async_result = g.apply_async()
 
-        print_progress(async_result)
