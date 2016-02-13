@@ -134,7 +134,6 @@ def create_requests_and_save_datas(douban_id):
 
 
 def task(douban_ids, pool_number):
-    #engine.dispose()
     pool = Pool(pool_number)
 
     for douban_id in douban_ids:

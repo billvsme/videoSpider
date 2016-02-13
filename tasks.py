@@ -21,6 +21,14 @@ def movie_full_task(douban_ids, pool_number):
         movie_full_task.retry(countdown=10)
 
 @app.task
+def celebry_full_task(douban_ids, pool_number):
+    try:
+        douban.tasks.get_celebrities_full_data.task(douban_ids, pool_number)
+    except:
+        print('Error ***************************')
+        celebry_full_task.retry(countdown=10)
+
+@app.task
 def down_images_task(douban_ids, pool_number):
     try:
         douban.tasks.down_images.task(douban_ids, pool_number)

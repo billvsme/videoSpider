@@ -31,9 +31,11 @@ def start_parser(text):
     s = BeautifulSoup(text, 'lxml')
 
     data['name'] = s.select('#content h1')[0].string
-    data['cover'] = s.select('.nbg img')[0].get('src')
+    data['thumbnail_cover'] = s.select('.nbg img')[0].get('src')
+    data['cover'] = data['thumbnail_cover'].replace('/medium', '/large')
     data['summary'] = s.select('#intro .bd')[0].text.strip('\n\u3000 ')
-    data['photos'] = [photo.get('src') for photo in s.select('#intro + .mod')[0].find_all('img')]
+    data['thumbnail_photos'] = [photo.get('src') for photo in s.select('#intro + .mod')[0].find_all('img')]
+    data['photos'] = [photo.replace('/albumicon', '/photo') for photo in data['thumbnail_photos']]
 
     info_node_dict = {}
     info_nodes = s.find(class_='info').find_all('li')
