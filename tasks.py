@@ -8,8 +8,8 @@ monkey.patch_socket()
 app = Celery('tasks', backend='db+sqlite:///celery_backend.sqlite', broker='sqla+sqlite:///celery_borker.sqlite')
 
 @app.task
-def movie_base_task():
-    movie_douban_ids = douban.tasks.get_main_movies_base_data.task()
+def movie_base_task(pool_number):
+    movie_douban_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
     return movie_douban_ids
 
 @app.task

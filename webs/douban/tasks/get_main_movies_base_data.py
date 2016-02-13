@@ -2,6 +2,7 @@ import requests
 import gevent
 import models
 
+from gevent.pool import Pool
 from helpers import random_str
 from webs.douban import parsers
 from config import sqla
@@ -62,19 +63,18 @@ def create_requests_and_save_datas(type, tag, sort):
             ))
 
 
-def task():
-    threads = set()
+def task(pool_number):
+    pool = Pool(pool_number)
 
     for type in types:
         for tag in tags_dict[type]:
             for sort in sorts:
-                threads.add(gevent.spawn(
+                pool.spawn(
                     create_requests_and_save_datas,
                     type=type,
                     tag=tag,
                     sort=sort
-                ))
-
-    gevent.joinall(threads)
+                )
+    pool.join()
 
     return list(movie_douban_ids)
