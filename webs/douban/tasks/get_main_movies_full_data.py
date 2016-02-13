@@ -1,10 +1,10 @@
 import requests
 import multiprocessing
+import models
+
 from gevent.pool import Pool
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-
-from webs import models
-from webs import random_str
+from helpers import random_str
 from webs.douban import parsers
 from config import sqla
 from . import get_main_movies_base_data

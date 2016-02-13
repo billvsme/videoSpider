@@ -1,12 +1,14 @@
 import ast
 import os
 import requests
-from config import sqla
-from gevent.pool import Pool
-from webs import random_str
-from webs import models
+import models
 
-base_path = './photo/'
+from config import config, sqla
+from gevent.pool import Pool
+from helpers import random_str
+
+
+base_path = config.get('photo', 'path')
 cookies = {
         'bid': ''
 }
@@ -15,18 +17,17 @@ def down(url, path, filename):
     cookies['bid'] = random_str(11)
     r = requests.get(url, cookies=cookies, timeout=10)
     try:
-        with open(path+filename, 'wb') as f:
+        with open(os.path.join(path, filename), 'wb') as f:
             f.write(r.content)
     except FileNotFoundError:
         os.makedirs(path)
-        with open(path+filename, 'wb') as f:
+        with open(os.path.join(path, filename), 'wb') as f:
             f.write(r.content)
 
 
 def create_down(str_urls, douban_id, category):
     urls = ast.literal_eval(str_urls)
-    #base_path = './photos/' + douban_id + '_' + category
-    path = base_path + category + '/'
+    path = os.path.join(base_path, category)
 
     for url in urls:
         filename = str(douban_id) + '_' + url.split('/')[-1].strip('?')
@@ -46,7 +47,7 @@ def create_requests_and_save_datas(douban_id):
     thumbnail_wallpapers_url = subject.thumbnail_wallpapers
 
 
-    down(cover_url, base_path + 'cover/', str(douban_id)+'_'+cover_url.split('/')[-1].strip('?'))
+    down(cover_url, os.path.join(base_path, 'cover'), str(douban_id)+'_'+cover_url.split('/')[-1].strip('?'))
 
     create_down(covers_url, douban_id, 'covers')
     create_down(thumbnail_covers_url, douban_id, 'thumbnail_covers')

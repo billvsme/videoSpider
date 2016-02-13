@@ -1,8 +1,8 @@
 import requests
 import gevent
+import models
 
-from webs import models
-from webs import random_str
+from helpers import random_str
 from webs.douban import parsers
 from config import sqla
 
