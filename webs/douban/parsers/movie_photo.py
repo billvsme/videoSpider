@@ -16,7 +16,7 @@ def start_parser(text):
         for photo_node in photo_nodes:
             thumbnail_photo_url = photo_node.get('src')
             thumbnail_photo_urls.append(thumbnail_photo_url)
-            photo_urls.append(thumbnail_photo_url.replace('albumicon', 'photo'))
+            photo_urls.append(thumbnail_photo_url.replace('/albumicon', '/photo'))
 
         if photo_category_name == '剧照':
             data['photos'] = photo_urls

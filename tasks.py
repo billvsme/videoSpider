@@ -4,7 +4,6 @@ from webs import douban
 from gevent import monkey
 monkey.patch_socket()
 
-
 app = Celery('tasks', backend='db+sqlite:///celery_backend.sqlite', broker='sqla+sqlite:///celery_borker.sqlite')
 
 @app.task

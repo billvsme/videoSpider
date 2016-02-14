@@ -117,9 +117,9 @@ def create_requests_and_save_datas(douban_id):
 
     session.commit()
 
-    # save photo
+    # parser movie photo
     r = requests.get(douban_movie_url + str(douban_id) + '/all_photos', cookies=cookies, timeout=10)
-    data = parsers.photo.start_parser(r.text)
+    data = parsers.movie_photo.start_parser(r.text)
 
     for k, v in data.items():
         v = str(v)

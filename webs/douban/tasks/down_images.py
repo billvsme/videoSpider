@@ -5,7 +5,7 @@ import models
 
 from config import config, sqla
 from gevent.pool import Pool
-from helpers import random_str
+from helpers import random_str, down
 
 
 base_path = config.get('photo', 'path')
@@ -13,7 +13,8 @@ cookies = {
         'bid': ''
 }
 
-def down(url, path, filename):
+'''
+def down(url, cookies, path, filename):
     cookies['bid'] = random_str(11)
     r = requests.get(url, cookies=cookies, timeout=10)
     try:
@@ -23,7 +24,7 @@ def down(url, path, filename):
         os.makedirs(path)
         with open(os.path.join(path, filename), 'wb') as f:
             f.write(r.content)
-
+'''
 
 def create_down(str_urls, douban_id, category):
     urls = ast.literal_eval(str_urls)
@@ -31,7 +32,8 @@ def create_down(str_urls, douban_id, category):
 
     for url in urls:
         filename = str(douban_id) + '_' + url.split('/')[-1].strip('?')
-        down(url, path, filename)
+        cookies['bid'] = random_str(11)
+        down(url, cookies, path, filename)
 
 def create_requests_and_save_datas(douban_id):
     session = sqla['session']
@@ -47,7 +49,7 @@ def create_requests_and_save_datas(douban_id):
     thumbnail_wallpapers_url = subject.thumbnail_wallpapers
 
 
-    down(cover_url, os.path.join(base_path, 'cover'), str(douban_id)+'_'+cover_url.split('/')[-1].strip('?'))
+    down(cover_url, cookies, os.path.join(base_path, 'cover'), str(douban_id)+'_'+cover_url.split('/')[-1].strip('?'))
 
     create_down(covers_url, douban_id, 'covers')
     create_down(thumbnail_covers_url, douban_id, 'thumbnail_covers')

@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
         douban_ids = []
         for douban_id, in session.query(models.Movie.douban_id):
-            douban_ids.add(douban_id)
+            douban_ids.append(douban_id)
 
         douban_ids = list(douban_ids)
         g = get_douban_task_group(douban_ids, down_images_task, group_size=5)
