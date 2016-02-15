@@ -38,15 +38,15 @@ def create_down(str_urls, douban_id, category):
 def create_requests_and_save_datas(douban_id):
     session = sqla['session']
     cookies['bid'] = random_str(11)
-    subject = session.query(models.Subject).filter_by(douban_id=douban_id).one()
+    video = session.query(models.video).filter_by(douban_id=douban_id).one()
 
-    cover_url = subject.cover
-    covers_url = subject.covers
-    thumbnail_covers_url = subject.thumbnail_covers
-    photos_url = subject.photos
-    thumbnail_photos_url = subject.thumbnail_photos
-    wallpapers_url = subject.wallpapers
-    thumbnail_wallpapers_url = subject.thumbnail_wallpapers
+    cover_url = video.cover
+    covers_url = video.covers
+    thumbnail_covers_url = video.thumbnail_covers
+    photos_url = video.photos
+    thumbnail_photos_url = video.thumbnail_photos
+    wallpapers_url = video.wallpapers
+    thumbnail_wallpapers_url = video.thumbnail_wallpapers
 
 
     down(cover_url, cookies, os.path.join(base_path, 'cover'), str(douban_id)+'_'+cover_url.split('/')[-1].strip('?'))

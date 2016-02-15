@@ -5,18 +5,18 @@ from sqlalchemy.orm import relationship
 from .base import Base
 
 
-subject_director_table = Table('subjects_directors_association', Base.metadata,
-    Column('subject_id', Integer, ForeignKey('subjects.id')),
+medium_director_table = Table('media_directors_association', Base.metadata,
+    Column('medium_id', Integer, ForeignKey('media.id')),
     Column('celebrity_id', Integer, ForeignKey('celebrities.id'))
 )
 
-subject_playwright_table = Table('subjects_playwrights_association', Base.metadata,
-    Column('subject_id', Integer, ForeignKey('subjects.id')),
+medium_playwright_table = Table('media_playwrights_association', Base.metadata,
+    Column('medium_id', Integer, ForeignKey('media.id')),
     Column('celebrity_id', Integer, ForeignKey('celebrities.id'))
 )
 
-subject_actor_table = Table('subjects_actors_association', Base.metadata,
-    Column('subject_id', Integer, ForeignKey('subjects.id')),
+medium_actor_table = Table('media_actors_association', Base.metadata,
+    Column('medium_id', Integer, ForeignKey('media.id')),
     Column('celebrity_id', Integer, ForeignKey('celebrities.id'))
 )
 
@@ -46,17 +46,17 @@ class Celebrity(Base):
     imdb_number = Column(String)
     summary = Column(String)
 
-    director_subjects = relationship("Subject",
-        secondary=subject_director_table,
+    director_media = relationship("Medium",
+        secondary=medium_director_table,
         backref='directors'
     )
 
-    playwright_subjects = relationship("Subject",
-        secondary=subject_playwright_table,
+    playwright_media = relationship("Medium",
+        secondary=medium_playwright_table,
         backref='playwrights'
     )
 
-    actor_subjects = relationship("Subject",
-        secondary=subject_actor_table,
+    actor_media = relationship("Medium",
+        secondary=medium_actor_table,
         backref='actors'
     )

@@ -34,7 +34,7 @@ def print_progress(async_result, desc):
 if __name__ == '__main__':
     if sys.argv[1] == 'movie':
         print('Preparing, please wait, about 1 min...(no progress bar)')
-        douban_ids = movie_base_task.delay(10).get()
+        douban_ids = movie_base_task.delay(20).get()
         print('Preparation Completed.')
         
         g = get_douban_task_group(douban_ids, movie_full_task)
@@ -69,4 +69,3 @@ if __name__ == '__main__':
 
         async_result = g.apply_async()
         print_progress(async_result, "down movie images")
-

@@ -1,5 +1,6 @@
 from .base import Base
-from .subject import Subject
-from .movie import Movie, MovieGenre, MovieCountry, MovieLanguage
-from .book import Book
+from .country import Country
+from .language import Language
 from .celebrity import Celebrity
+from .medium import *
+from .genre import *

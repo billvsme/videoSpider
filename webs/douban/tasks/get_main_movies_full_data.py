@@ -87,22 +87,22 @@ def create_requests_and_save_datas(douban_id):
         elif k == 'countries':
             for movie_country in v:
                 try:
-                    movie_country_obj = models.MovieCountry(**movie_country)
+                    movie_country_obj = models.Country(**movie_country)
                     session.add(movie_country_obj)
                     session.commit()
                 except (IntegrityError, InvalidRequestError):
                     session.rollback()
-                    movie_country_obj = session.query(models.MovieCountry).filter_by(name=movie_country['name']).one()
+                    movie_country_obj = session.query(models.Country).filter_by(name=movie_country['name']).one()
                 movie.countries.append(movie_country_obj)
         elif k == 'languages':
             for movie_language in v:
                 try:
-                    movie_language_obj = models.MovieLanguage(**movie_language)
+                    movie_language_obj = models.Language(**movie_language)
                     session.add(movie_language_obj)
                     session.commit()
                 except (IntegrityError, InvalidRequestError):
                     session.rollback()
-                    movie_language_obj = session.query(models.MovieLanguage).filter_by(name=movie_language['name']).one()
+                    movie_language_obj = session.query(models.Language).filter_by(name=movie_language['name']).one()
                 movie.languages.append(movie_language_obj)
         session.commit()
 
