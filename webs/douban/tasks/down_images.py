@@ -13,18 +13,6 @@ cookies = {
         'bid': ''
 }
 
-'''
-def down(url, cookies, path, filename):
-    cookies['bid'] = random_str(11)
-    r = requests.get(url, cookies=cookies, timeout=10)
-    try:
-        with open(os.path.join(path, filename), 'wb') as f:
-            f.write(r.content)
-    except FileNotFoundError:
-        os.makedirs(path)
-        with open(os.path.join(path, filename), 'wb') as f:
-            f.write(r.content)
-'''
 
 def create_down(str_urls, douban_id, category):
     urls = ast.literal_eval(str_urls)
@@ -38,7 +26,7 @@ def create_down(str_urls, douban_id, category):
 def create_requests_and_save_datas(douban_id):
     session = sqla['session']
     cookies['bid'] = random_str(11)
-    video = session.query(models.video).filter_by(douban_id=douban_id).one()
+    video = session.query(models.Video).filter_by(douban_id=douban_id).one()
 
     cover_url = video.cover
     covers_url = video.covers

@@ -1,3 +1,3 @@
 from .medium import Medium
-from .video import Movie
+from .video import Video, Movie
 from .book import Book
