@@ -11,7 +11,7 @@ sudo apt-get build-dep python3-lxml
 ```
 virtualenv videospider
 . videospider/bin/activate
-pip install -r sudo apt-get build-dep python3-lxml
+pip install -r requirements.txt
 ```
 # Usage
 首先,设置配置config.ini
