@@ -32,7 +32,7 @@ def print_progress(async_result, desc):
 
 
 if __name__ == '__main__':
-    if sys.argv[1] == 'movie':
+    if sys.argv[1] == 'video':
         print('Preparing, please wait, about 1 min...(no progress bar)')
         douban_ids = movie_base_task.delay(20).get()
         print('Preparation Completed.')
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         print_progress(async_result, 'get celery data')
 
 
-    elif sys.argv[1] == 'image':
+    elif sys.argv[1] == 'down-image':
         print('Start down movie images(about use 10+h, 40G):')
 
         douban_ids = []
