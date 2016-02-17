@@ -6,3 +6,4 @@ beautifulsoup4==4.4.1
 lxml==3.5.0
 gipc==0.6.0
 celery==3.1.20
+tqdm==3.8.0
