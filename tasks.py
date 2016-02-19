@@ -20,17 +20,25 @@ def movie_full_task(douban_ids, pool_number):
         movie_full_task.retry(countdown=10)
 
 @app.task
-def celebry_full_task(douban_ids, pool_number):
+def celebrity_full_task(douban_ids, pool_number):
     try:
         douban.tasks.get_celebrities_full_data.task(douban_ids, pool_number)
     except:
         print('Error ***************************')
-        celebry_full_task.retry(countdown=10)
+        celebrity_full_task.retry(countdown=10)
 
 @app.task
-def down_images_task(douban_ids, pool_number):
+def down_video_images_task(douban_ids, pool_number):
     try:
-        douban.tasks.down_images.task(douban_ids, pool_number)
+        douban.tasks.down_video_images.task(douban_ids, pool_number)
+    except:
+        print('Error ***************************')
+        down_images_task.retry(countdown=10)
+
+@app.task
+def down_celebrity_images_task(douban_ids, pool_number):
+    try:
+        douban.tasks.down_celebrity_images.task(douban_ids, pool_number)
     except:
         print('Error ***************************')
         down_images_task.retry(countdown=10)

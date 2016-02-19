@@ -12,8 +12,9 @@ from celery import group
 from tqdm import tqdm
 from tasks import (movie_base_task,
                    movie_full_task,
-                   celebry_full_task,
-                   down_images_task,
+                   celebrity_full_task,
+                   down_video_images_task,
+                   down_celebrity_images_task,
                    get_douban_task_group)
 
 from celery.signals import task_success
@@ -45,14 +46,14 @@ if __name__ == '__main__':
 
         
 
-    if sys.argv[1] == 'celebry':
-        print('Start get celebry data:')
+    if sys.argv[1] == 'celebrity':
+        print('Start get celebrity data:')
 
         douban_ids = []
         for douban_id, in session.query(models.Celebrity.douban_id):
             douban_ids.append(douban_id)
 
-        g = get_douban_task_group(douban_ids, celebry_full_task)
+        g = get_douban_task_group(douban_ids, celebrity_full_task)
         async_result = g.apply_async()
         print_progress(async_result, 'get celery data')
 
@@ -65,7 +66,18 @@ if __name__ == '__main__':
             douban_ids.append(douban_id)
 
         douban_ids = list(douban_ids)
-        g = get_douban_task_group(douban_ids, down_images_task, group_size=5)
+        g = get_douban_task_group(douban_ids, down_video_images_task, group_size=5)
 
         async_result = g.apply_async()
-        print_progress(async_result, "down movie images")
+        print_progress(async_result, "down video images")
+
+
+        douban_ids = []
+        for douban_id, in session.query(models.Celebrity.douban_id):
+            douban_ids.append(douban_id)
+
+        douban_ids = list(douban_ids)
+        g = get_douban_task_group(douban_ids, down_celebrity_images_task, group_size=5)
+
+        async_result = g.apply_async()
+        print_progress(async_result, "down celebrity images")
