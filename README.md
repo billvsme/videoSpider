@@ -29,9 +29,9 @@ python start.py video
 ```
 抓取演员信息
 ```
-python start.py celebry
+python start.py celebrity
 ```
-下载电影、电视剧、动漫、演员的图片到本地(大概40G)
+下载电影、电视剧、动漫、演员的图片到本地(大概需要10个小时, 40G)
 ```
 python start.py down-image
 ```
