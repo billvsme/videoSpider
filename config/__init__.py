@@ -16,8 +16,8 @@ else:
     config = configparser.ConfigParser()
 
 
-config_dev_path = './{}/config.ini'.format(__name__)
-config_path = './{}/config_dev.ini'.format(__name__)
+config_path = './{}/config.ini'.format(__name__)
+config_dev_path = './{}/config_dev.ini'.format(__name__)
 
 # read config.ini file
 if os.path.exists(config_path):

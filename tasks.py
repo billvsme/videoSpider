@@ -43,6 +43,21 @@ def down_celebrity_images_task(douban_ids, pool_number):
         print('Error ***************************')
         down_images_task.retry(countdown=10)
 
+@app.task
+def upload_images_task(filenames, pool_number):
+    from helpers import upload_qiniu_by_filenames
+    from config import config
+    access_key = config.get('qiniu', 'access_key')
+    secret_key = config.get('qiniu', 'secret_key')
+    bucket_name = config.get('qiniu', 'bucket_name')
+    try:
+        upload_qiniu_by_filenames(access_key, secret_key, bucket_name, '/static/img/', 100, config.get('photo', 'path'),filenames)
+    except:
+        raise
+        print('Error ***************************')
+        upload_images_task.retry(countdown=10)
+    
+
 
 def get_douban_task_group(douban_ids, douban_task, group_size=20):
     douban_size = len(douban_ids)

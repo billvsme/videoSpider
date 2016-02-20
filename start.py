@@ -6,6 +6,7 @@ from gevent import monkey;
 monkey.patch_socket()
 monkey.patch_os()
 from webs import douban
+from config import config
 from config import sqla; session = sqla['session']
 
 from celery import group
@@ -15,6 +16,7 @@ from tasks import (movie_base_task,
                    celebrity_full_task,
                    down_video_images_task,
                    down_celebrity_images_task,
+                   upload_images_task,
                    get_douban_task_group)
 
 from celery.signals import task_success
@@ -57,6 +59,10 @@ if __name__ == '__main__':
         async_result = g.apply_async()
         print_progress(async_result, 'get celery data')
 
+    if sys.argv[1] == 'full':
+        os.system('python start.py video') 
+        os.system('python start.py celebrity') 
+
 
     elif sys.argv[1] == 'down-image':
         print('Start down movie images(about use 10+h, 40G):')
@@ -81,3 +87,20 @@ if __name__ == '__main__':
 
         async_result = g.apply_async()
         print_progress(async_result, "down celebrity images")
+
+    elif sys.argv[1] == 'upload-image':
+        print('Preparing, please wait, about 1 min...(no progress bar)')
+        photo_filenames = []
+        for dirpath, dirnames, filenames in os.walk(config.get('photo', 'path')):
+            print(dirpath)
+            if len(filenames) > 0:
+                for filename in filenames:
+                    if filename.startswith('.'):
+                        continue
+                    
+                    localfile = os.path.join(dirpath, filename)
+                    photo_filenames.append(localfile)
+        print('Preparation Completed.')
+        g = get_douban_task_group(photo_filenames, upload_images_task, group_size=5)
+        async_result = g.apply_async()
+        print_progress(async_result, "upload images")
