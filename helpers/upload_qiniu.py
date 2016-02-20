@@ -7,13 +7,16 @@ from gevent.pool import Pool
 from config import config
 
 
-def down(token, key, localfile, mime_type):
+def down(token, key, localfile, mime_type, delete=False):
     ret, info = qiniu.put_file(token, key, localfile, mime_type=mime_type, check_crc=True)
     assert ret['key'] == key
     assert ret['hash'] == qiniu.etag(localfile)
 
+    if delete == True:
+        os.remove(localfile)
 
-def upload_qiniu_by_path(access_key, secret_key, bucket_name, key_prefix, pool_number, path):
+
+def upload_qiniu_by_path(access_key, secret_key, bucket_name, key_prefix, pool_number, path, delete=False):
     q = Auth(access_key, secret_key)
     mime_type = "text/plain"
     params = {'x:a': 'a'}
@@ -35,11 +38,12 @@ def upload_qiniu_by_path(access_key, secret_key, bucket_name, key_prefix, pool_n
                     token=token,
                     key=key,
                     localfile=localfile,
-                    mime_type=mime_type
+                    mime_type=mime_type,
+                    delete=delete
                 )
 
 
-def upload_qiniu_by_filenames(access_key, secret_key, bucket_name, key_prefix, pool_number, path, filenames):
+def upload_qiniu_by_filenames(access_key, secret_key, bucket_name, key_prefix, pool_number, path, filenames, delete=False):
     q = Auth(access_key, secret_key)
     mime_type = "text/plain"
     params = {'x:a': 'a'}
@@ -48,7 +52,6 @@ def upload_qiniu_by_filenames(access_key, secret_key, bucket_name, key_prefix, p
 
     for filename in filenames:
         localfile = filename
-        print(localfile)
         key = os.path.join(key_prefix, localfile.replace(path, '')[1:])
         token = q.upload_token(bucket_name, key)
 
@@ -57,7 +60,8 @@ def upload_qiniu_by_filenames(access_key, secret_key, bucket_name, key_prefix, p
             token=token,
             key=key,
             localfile=localfile,
-            mime_type=mime_type
+            mime_type=mime_type,
+            delete=delete
         )
 
     pool.join()

@@ -51,9 +51,17 @@ def upload_images_task(filenames, pool_number):
     secret_key = config.get('qiniu', 'secret_key')
     bucket_name = config.get('qiniu', 'bucket_name')
     try:
-        upload_qiniu_by_filenames(access_key, secret_key, bucket_name, '/static/img/', 100, config.get('photo', 'path'),filenames)
+        upload_qiniu_by_filenames(
+            access_key,
+            secret_key,
+            bucket_name,
+            '/static/img/',
+            10, 
+            config.get('photo', 'path'),
+            filenames,
+            True
+        )
     except:
-        raise
         print('Error ***************************')
         upload_images_task.retry(countdown=10)
     
