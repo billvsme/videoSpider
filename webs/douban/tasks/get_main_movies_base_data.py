@@ -20,13 +20,13 @@ cookies = {
     'bid': ''
 }
 
-movie_douban_ids = set()
+video_douban_ids = set()
 
 session = sqla['session']
-movie_query = session.query(models.Movie.douban_id)
+video_query = session.query(models.Video.douban_id)
 
-for douban_id, in movie_query:
-    movie_douban_ids.add(douban_id)
+for douban_id, in video_query:
+    video_douban_ids.add(douban_id)
 
 
 def create_requests_and_save_datas(type, tag, sort):
@@ -48,16 +48,21 @@ def create_requests_and_save_datas(type, tag, sort):
 
     for data in datas:
         douban_id = data.get('douban_id')
-        if douban_id in movie_douban_ids:
+        if douban_id in video_douban_ids:
             continue
         data['subtype'] = type
         data['crawler_tag'] = tag
         data['crawler_sort'] = sort
 
-        movie = models.Movie(**data)
-        session.add(movie)
+        if type == 'movie':
+            video = models.Movie(**data)
+        elif type == 'tv' and tag == '日本动画':
+            video = models.Animation(**data)
+        else:
+            video = models.TV(**data)
+        session.add(video)
         session.commit()
-        movie_douban_ids.add(douban_id)
+        video_douban_ids.add(douban_id)
         print(','.join(
                 [douban_id ,data.get('title')]
             ))
@@ -77,4 +82,4 @@ def task(pool_number):
                 )
     pool.join()
 
-    return list(movie_douban_ids)
+    return list(video_douban_ids)
