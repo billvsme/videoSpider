@@ -28,6 +28,7 @@ class Medium(Base):
     thumbnail_covers = Column(String)
     pubdate = Column(String)
 
+    is_detail = Column(Boolean)
 
     douban_id = Column(String)
     douban_url = Column(String)

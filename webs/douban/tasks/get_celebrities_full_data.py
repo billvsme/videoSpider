@@ -33,6 +33,7 @@ def create_requests_and_save_datas(douban_id):
     for k, v in data.items():
         setattr(celebrity, k, v)
 
+    celebrity.is_detail = True
     session.commit()
     print(' '.join(
         ['celebrity', douban_id, data['name']]

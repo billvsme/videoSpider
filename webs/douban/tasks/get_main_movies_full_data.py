@@ -132,6 +132,7 @@ def create_requests_and_save_datas(douban_id):
         v = str(v)
         setattr(video, k, v)
 
+    video.is_detail = True;
     session.commit()
 
     print(','.join(
