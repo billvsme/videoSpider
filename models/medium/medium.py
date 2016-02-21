@@ -39,6 +39,8 @@ class Medium(Base):
     douban_rating = Column(String)
     douban_ratings_count = Column(String)
 
+    bilibili_id = Column(String)
+
     languages = relationship('Language',
             secondary=medium_language_table,
             backref='media'
