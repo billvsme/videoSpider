@@ -1,13 +1,13 @@
 """Add tv and animation table and media table add bilibili_id column
 
-Revision ID: 8f8644013170
+Revision ID: 1b2d2f1a1d56
 Revises: cc825dd0b55a
-Create Date: 2016-02-21 22:10:02.197557
+Create Date: 2016-02-21 22:24:43.509991
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '8f8644013170'
+revision = '1b2d2f1a1d56'
 down_revision = 'cc825dd0b55a'
 branch_labels = None
 depends_on = None
@@ -37,8 +37,8 @@ def upgrade():
     op.create_table('animations_genres_association',
     sa.Column('animation_id', sa.Integer(), nullable=True),
     sa.Column('animation_genre_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['animation_genre_id'], ['movie_genres.id'], ),
-    sa.ForeignKeyConstraint(['animation_id'], ['movies.id'], )
+    sa.ForeignKeyConstraint(['animation_genre_id'], ['animation_genres.id'], ),
+    sa.ForeignKeyConstraint(['animation_id'], ['animations.id'], )
     )
     op.create_table('tvs_genres_association',
     sa.Column('tv_id', sa.Integer(), nullable=True),

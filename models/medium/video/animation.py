@@ -5,8 +5,8 @@ from models import Base
 from .video import Video
 
 animation_genre_table = Table('animations_genres_association', Base.metadata,
-    Column('animation_id', Integer, ForeignKey('movies.id')),
-    Column('animation_genre_id', Integer, ForeignKey('movie_genres.id'))
+    Column('animation_id', Integer, ForeignKey('animations.id')),
+    Column('animation_genre_id', Integer, ForeignKey('animation_genres.id'))
 )
 
 class Animation(Video):
@@ -15,7 +15,7 @@ class Animation(Video):
 
     genres = relationship('AnimationGenre',
         secondary=animation_genre_table,
-        backref='tvs'
+        backref='animations'
     )
 
     __mapper_args__ = {
