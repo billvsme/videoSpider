@@ -19,6 +19,10 @@ pip install -r requirements.txt
 cp config/config_dev.ini config/config.ini
 vim config/config.ini
 ```
+然后生成数据库
+```
+alembic upgrade head
+```
 然后运行Celery
 ```
 celery -A tasks worker  --loglevel=info
