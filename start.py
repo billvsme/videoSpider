@@ -4,7 +4,7 @@ import sys
 import models
 from gevent import monkey;
 monkey.patch_socket()
-monkey.patch_os()
+#monkey.patch_os()
 from webs import douban
 from config import config
 from config import sqla; session = sqla['session']
@@ -17,6 +17,7 @@ from tasks import (movie_base_task,
                    down_video_images_task,
                    down_celebrity_images_task,
                    upload_images_task,
+                   whoosh_task,
                    get_douban_task_group)
 
 from celery.signals import task_success
@@ -104,3 +105,14 @@ if __name__ == '__main__':
         g = get_douban_task_group(photo_filenames, upload_images_task, group_size=5)
         async_result = g.apply_async()
         print_progress(async_result, "upload images")
+
+    elif sys.argv[1] == 'whoosh':
+        query = session.query(models.Video.id)
+
+        ids = []
+        for id_, in query:
+            ids.append(id_)
+
+        g = get_douban_task_group(ids, whoosh_task, group_size=50, model_class=models.Video);
+        async_result = g.apply_async()
+        print_progress(async_result, "whoosh index")

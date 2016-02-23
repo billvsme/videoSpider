@@ -1,6 +1,9 @@
 import os
 import sys
 
+from whoosh import index
+from whoosh.fields import *
+from jieba.analyse import ChineseAnalyzer; analyzer = ChineseAnalyzer()
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from celery.signals import worker_process_init
@@ -61,3 +64,18 @@ def new_process(signal, sender):
 
     sqla['engine'] = engine
     sqla['session'] = session
+
+
+
+
+schema = Schema(id_=ID(stored=True), title=TEXT(stored=True), summary=TEXT(stored=True, analyzer=analyzer))
+
+exists = index.exists_in("indexdir")
+
+if exists == True:
+    ix = index.open_dir("indexdir")
+else:
+    if not os.path.exists("indexdir"):
+        os.mkdir("indexdir")
+    ix = index.create_in("indexdir", schema=schema)
+

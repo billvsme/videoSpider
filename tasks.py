@@ -1,5 +1,9 @@
 import sys
+from whoosh.index import create_in
+from whoosh.fields import *
 from celery import Celery, group
+from config import sqla, ix
+from whoosh.writing import AsyncWriter
 from webs import douban
 from gevent import monkey
 monkey.patch_socket()
@@ -66,13 +70,33 @@ def upload_images_task(filenames, pool_number):
         upload_images_task.retry(countdown=10)
     
 
+@app.task
+def whoosh_task(ids, pool_number, model_class):
+    session = sqla['session']
 
-def get_douban_task_group(douban_ids, douban_task, group_size=20):
+    writer =  AsyncWriter(ix)
+    for id_ in ids:
+        obj = session.query(model_class).filter_by(id=id_).one()
+        if obj.title is None or obj.summary is None:
+            continue
+
+        writer.add_document(
+            title=obj.title,
+            summary=obj.summary
+        )
+        print(obj.id)
+
+    writer.commit()
+
+
+def get_douban_task_group(douban_ids, douban_task, **kwargs):
     douban_size = len(douban_ids)
+    group_size = kwargs.pop('group_size')
+    kwargs['pool_number'] = group_size
     douban_subtasks = [
         douban_task.s(
             douban_ids[x: x+group_size],
-            group_size
+            **kwargs
         ) for x in range(0, douban_size, group_size)
     ]
 
