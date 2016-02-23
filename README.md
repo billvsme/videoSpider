@@ -3,14 +3,17 @@
 使用requests, BeautifulSoup, gevent, SQLAlchemy, Alembic, celery
 
 # Install
+注意: 使用python3
 首先因为选择使用使用lxml解析html,  安装lxml库前需要安装相关c库
 ```
 sudo apt-get install libxml2-dev libxslt-dev python-dev
 sudo apt-get build-dep python3-lxml
 ```
 ```
-virtualenv videospider
+virtualenv videospider -p python3
 . videospider/bin/activate
+git clone https://github.com/billvsme/videoSpider
+cd videoSpider
 pip install -r requirements.txt
 ```
 # Usage
@@ -42,4 +45,8 @@ python start.py down-image
 上传图片到七牛
 ```
 python start.py upload-image
+```
+创建Whoosh索引
+```
+python start.py whoosh
 ```
