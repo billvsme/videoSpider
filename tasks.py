@@ -91,7 +91,10 @@ def whoosh_task(ids, pool_number, model_class):
 
 def get_douban_task_group(douban_ids, douban_task, **kwargs):
     douban_size = len(douban_ids)
-    group_size = kwargs.pop('group_size')
+    if 'group_size' in kwargs:
+        group_size = kwargs.pop('group_size')
+    else:
+        group_size = 20
     kwargs['pool_number'] = group_size
     douban_subtasks = [
         douban_task.s(
