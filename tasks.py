@@ -13,8 +13,8 @@ monkey.patch_socket()
 '''
 @celery_app.task
 def douban_movie_base_task(pool_number):
-    douban_movie_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
-    return douban_movie_ids
+    movie_douban_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
+    return movie_douban_ids
 
 
 @celery_app.task
@@ -35,8 +35,8 @@ def douban_celebrity_full_task(douban_ids, pool_number):
 
 @celery_app.task
 def bilibili_animation_base_task(pool_number):
-    bilibili_animation_ids = bilibili.tasks.get_animations_base_data.task(pool_number)
-    return bilibili_animation_ids
+    animation_bilibili_ids = bilibili.tasks.get_animations_base_data.task(pool_number)
+    return animation_bilibili_ids
 
 @celery_app.task
 def down_video_images_task(douban_ids, pool_number):
