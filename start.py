@@ -14,6 +14,7 @@ from tqdm import tqdm
 from tasks import (douban_movie_base_task,
                    douban_movie_full_task,
                    douban_celebrity_full_task,
+                   bilibili_animation_base_task,
                    down_video_images_task,
                    down_celebrity_images_task,
                    upload_images_task,
@@ -54,7 +55,9 @@ if __name__ == '__main__':
         async_result = g.apply_async()
         print_progress(async_result, 'get douban video full data')
 
-
+        print('Preparing get animation from bilibili, please wait, about 1 min...(no progress bar)')
+        bilibili_animation_base_task.delay(20).get()
+        print('Preparation Completed.')
         
 
     if sys.argv[1] == 'celebrity':

@@ -4,7 +4,7 @@ from whoosh.fields import *
 from celery import group
 from config import sqla, ix, celery_app
 from whoosh.writing import AsyncWriter
-from webs import douban
+from webs import douban, bilibili
 from gevent import monkey
 monkey.patch_socket()
 
@@ -13,9 +13,8 @@ monkey.patch_socket()
 '''
 @celery_app.task
 def douban_movie_base_task(pool_number):
-    movie_douban_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
-    return movie_douban_ids
-
+    douban_movie_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
+    return douban_movie_ids
 
 
 @celery_app.task
@@ -33,6 +32,11 @@ def douban_celebrity_full_task(douban_ids, pool_number):
     except:
         print('Error ***************************')
         celebrity_full_task.retry(countdown=10)
+
+@celery_app.task
+def bilibili_animation_base_task(pool_number):
+    bilibili_animation_ids = bilibili.tasks.get_animations_base_data.task(pool_number)
+    return bilibili_animation_ids
 
 @celery_app.task
 def down_video_images_task(douban_ids, pool_number):
