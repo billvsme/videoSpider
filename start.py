@@ -11,9 +11,9 @@ from config import sqla; session = sqla['session']
 
 from celery import group
 from tqdm import tqdm
-from tasks import (movie_base_task,
-                   movie_full_task,
-                   celebrity_full_task,
+from tasks import (douban_movie_base_task,
+                   douban_movie_full_task,
+                   douban_celebrity_full_task,
                    down_video_images_task,
                    down_celebrity_images_task,
                    upload_images_task,
@@ -38,15 +38,22 @@ def print_progress(async_result, desc):
 
 if __name__ == '__main__':
     if sys.argv[1] == 'video':
-        print('Preparing, please wait, about 1 min...(no progress bar)')
-        douban_ids = movie_base_task.delay(20).get()
+        print('Preparing get video from douban, please wait, about 1 min...(no progress bar)')
+        douban_movie_base_task.delay(20).get()
         print('Preparation Completed.')
         
-        g = get_task_group_by_id(douban_ids, movie_full_task)
+        douban_ids = []
+        for douban_id, in session.query(
+                models.Video.douban_id
+            ).filter(models.Video.is_detail == False):
+            douban_ids.append(douban_id)
 
-        print('Start get movie full data:')
+        g = get_task_group_by_id(douban_ids, douban_movie_full_task)
+
+        print('Start get movie full data fron douban:')
         async_result = g.apply_async()
-        print_progress(async_result, 'get movie full data')
+        print_progress(async_result, 'get douban video full data')
+
 
         
 
@@ -54,10 +61,12 @@ if __name__ == '__main__':
         print('Start get celebrity data:')
 
         douban_ids = []
-        for douban_id, in session.query(models.Celebrity.douban_id):
+        for douban_id, in session.query(
+                models.Celebrity.douban_id
+            ).filter(models.Celebrity.is_detail == False):
             douban_ids.append(douban_id)
 
-        g = get_task_group_by_id(douban_ids, celebrity_full_task)
+        g = get_task_group_by_id(douban_ids, douban_celebrity_full_task)
         async_result = g.apply_async()
         print_progress(async_result, 'get celery data')
 

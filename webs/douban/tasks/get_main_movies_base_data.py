@@ -5,7 +5,7 @@ import models
 from gevent.pool import Pool
 from helpers import random_str
 from webs.douban import parsers
-from config import sqla
+from config import sqla; session=sqla['session']
 
 
 types = ['movie', 'tv']
@@ -20,13 +20,12 @@ cookies = {
     'bid': ''
 }
 
-video_douban_ids = set()
+douban_video_ids = set()
 
-session = sqla['session']
 video_query = session.query(models.Video.douban_id)
 
 for douban_id, in video_query:
-    video_douban_ids.add(douban_id)
+    douban_video_ids.add(douban_id)
 
 
 def create_requests_and_save_datas(type, tag, sort):
@@ -48,7 +47,7 @@ def create_requests_and_save_datas(type, tag, sort):
 
     for data in datas:
         douban_id = data.get('douban_id')
-        if douban_id in video_douban_ids:
+        if douban_id in douban_video_ids:
             continue
         data['subtype'] = type
         data['crawler_tag'] = tag
@@ -62,7 +61,7 @@ def create_requests_and_save_datas(type, tag, sort):
             video = models.TV(**data)
         session.add(video)
         session.commit()
-        video_douban_ids.add(douban_id)
+        douban_video_ids.add(douban_id)
         print(','.join(
                 [douban_id ,data.get('title')]
             ))
@@ -82,4 +81,4 @@ def task(pool_number):
                 )
     pool.join()
 
-    return list(video_douban_ids)
+    return list(douban_video_ids)

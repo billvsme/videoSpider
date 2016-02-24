@@ -46,7 +46,7 @@ class Celebrity(Base):
     imdb_number = Column(String)
     summary = Column(String)
 
-    is_detail = Column(Boolean)
+    is_detail = Column(Boolean, default=False)
 
     director_media = relationship("Medium",
         secondary=medium_director_table,

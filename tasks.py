@@ -9,13 +9,17 @@ from gevent import monkey
 monkey.patch_socket()
 
 
+'''Fix, task try ... except... don't work, because monkey.patch_socket().
+'''
 @celery_app.task
-def movie_base_task(pool_number):
+def douban_movie_base_task(pool_number):
     movie_douban_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
     return movie_douban_ids
 
+
+
 @celery_app.task
-def movie_full_task(douban_ids, pool_number):
+def douban_movie_full_task(douban_ids, pool_number):
     try:
         douban.tasks.get_main_movies_full_data.task(douban_ids, pool_number)
     except:
@@ -23,7 +27,7 @@ def movie_full_task(douban_ids, pool_number):
         movie_full_task.retry(countdown=10)
 
 @celery_app.task
-def celebrity_full_task(douban_ids, pool_number):
+def douban_celebrity_full_task(douban_ids, pool_number):
     try:
         douban.tasks.get_celebrities_full_data.task(douban_ids, pool_number)
     except:
@@ -86,7 +90,6 @@ def whoosh_task(ids, pool_number, model_class):
         print(obj.id)
 
     writer.commit()
-
 
 
 def get_task_group_by_id(ids, task, **kwargs):
