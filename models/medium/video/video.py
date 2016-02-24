@@ -10,6 +10,7 @@ class Video(Medium):
     id = Column(Integer, ForeignKey('media.id'), primary_key=True)
     subtype = Column(String)
     official_site = Column(String)
+    total_count = Column(Integer)
     imdb_number = Column(String)
     duration = Column(String)
     year = Column(String)

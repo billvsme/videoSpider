@@ -49,7 +49,7 @@ if __name__ == '__main__':
             ).filter(models.Video.is_detail == False):
             douban_ids.append(douban_id)
 
-        g = get_task_group_by_id(douban_ids, douban_movie_full_task)
+        g = get_task_group_by_id(douban_ids[:100], douban_movie_full_task)
 
         print('Start get movie full data fron douban:')
         async_result = g.apply_async()

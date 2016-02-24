@@ -73,6 +73,10 @@ def get_movie_info(node_dict):
     if 'IMDb链接' in node_dict:
         movie_info['imdb_number'] = node_dict['IMDb链接'].next_sibling.next_sibling.string
 
+    if '集数' in node_dict:
+        total_count = node_dict['集数'].next_sibling.string.strip()
+        movie_info['total_count'] = total_count
+
     return movie_info
 
 

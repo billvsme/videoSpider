@@ -9,6 +9,7 @@ def start_parser(text):
         data['bilibili_id'] = animation_base_data['season_id']
         data['title'] = animation_base_data['title']
         data['cover'] = animation_base_data['cover']
+        data['total_count'] = int(animation_base_data['total_count'])
         datas.append(data)
 
     return datas
