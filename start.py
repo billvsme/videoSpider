@@ -18,7 +18,8 @@ from tasks import (movie_base_task,
                    down_celebrity_images_task,
                    upload_images_task,
                    whoosh_task,
-                   get_douban_task_group)
+                   get_task_group_by_id
+                  )
 
 from celery.signals import task_success
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
         douban_ids = movie_base_task.delay(20).get()
         print('Preparation Completed.')
         
-        g = get_douban_task_group(douban_ids, movie_full_task)
+        g = get_task_group_by_id(douban_ids, movie_full_task)
 
         print('Start get movie full data:')
         async_result = g.apply_async()
@@ -56,7 +57,7 @@ if __name__ == '__main__':
         for douban_id, in session.query(models.Celebrity.douban_id):
             douban_ids.append(douban_id)
 
-        g = get_douban_task_group(douban_ids, celebrity_full_task)
+        g = get_task_group_by_id(douban_ids, celebrity_full_task)
         async_result = g.apply_async()
         print_progress(async_result, 'get celery data')
 
@@ -73,7 +74,7 @@ if __name__ == '__main__':
             douban_ids.append(douban_id)
 
         douban_ids = list(douban_ids)
-        g = get_douban_task_group(douban_ids, down_video_images_task, group_size=5)
+        g = get_task_group_by_id(douban_ids, down_video_images_task, group_size=5)
 
         async_result = g.apply_async()
         print_progress(async_result, "down video images")
@@ -84,7 +85,7 @@ if __name__ == '__main__':
             douban_ids.append(douban_id)
 
         douban_ids = list(douban_ids)
-        g = get_douban_task_group(douban_ids, down_celebrity_images_task, group_size=5)
+        g = get_task_group_by_id(douban_ids, down_celebrity_images_task, group_size=5)
 
         async_result = g.apply_async()
         print_progress(async_result, "down celebrity images")
@@ -102,7 +103,7 @@ if __name__ == '__main__':
                     localfile = os.path.join(dirpath, filename)
                     photo_filenames.append(localfile)
         print('Preparation Completed.')
-        g = get_douban_task_group(photo_filenames, upload_images_task, group_size=5)
+        g = get_task_group_by_id(photo_filenames, upload_images_task, group_size=5)
         async_result = g.apply_async()
         print_progress(async_result, "upload images")
 
@@ -113,6 +114,6 @@ if __name__ == '__main__':
         for id_, in query:
             ids.append(id_)
 
-        g = get_douban_task_group(ids, whoosh_task, group_size=50, model_class=models.Video);
+        g = get_task_group_by_id(ids, whoosh_task, group_size=50, model_class=models.Video);
         async_result = g.apply_async()
         print_progress(async_result, "whoosh index")

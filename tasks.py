@@ -89,20 +89,19 @@ def whoosh_task(ids, pool_number, model_class):
     writer.commit()
 
 
-def get_douban_task_group(douban_ids, douban_task, **kwargs):
-    douban_size = len(douban_ids)
+
+def get_task_group_by_id(ids, task, **kwargs):
+    id_size = len(ids)
     if 'group_size' in kwargs:
         group_size = kwargs.pop('group_size')
     else:
         group_size = 20
     kwargs['pool_number'] = group_size
-    douban_subtasks = [
-        douban_task.s(
-            douban_ids[x: x+group_size],
+    subtasks = [
+        task.s(
+            ids[x: x+group_size],
             **kwargs
-        ) for x in range(0, douban_size, group_size)
+        ) for x in range(0, id_size, group_size)
     ]
 
-    g = group(douban_subtasks)
-
-    return g
+    return group(subtasks)
