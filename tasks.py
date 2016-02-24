@@ -1,21 +1,20 @@
 import sys
 from whoosh.index import create_in
 from whoosh.fields import *
-from celery import Celery, group
-from config import sqla, ix
+from celery import group
+from config import sqla, ix, celery_app
 from whoosh.writing import AsyncWriter
 from webs import douban
 from gevent import monkey
 monkey.patch_socket()
 
-app = Celery('tasks', backend='db+sqlite:///celery_backend.sqlite', broker='sqla+sqlite:///celery_borker.sqlite')
 
-@app.task
+@celery_app.task
 def movie_base_task(pool_number):
     movie_douban_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
     return movie_douban_ids
 
-@app.task
+@celery_app.task
 def movie_full_task(douban_ids, pool_number):
     try:
         douban.tasks.get_main_movies_full_data.task(douban_ids, pool_number)
@@ -23,7 +22,7 @@ def movie_full_task(douban_ids, pool_number):
         print('Error ***************************')
         movie_full_task.retry(countdown=10)
 
-@app.task
+@celery_app.task
 def celebrity_full_task(douban_ids, pool_number):
     try:
         douban.tasks.get_celebrities_full_data.task(douban_ids, pool_number)
@@ -31,7 +30,7 @@ def celebrity_full_task(douban_ids, pool_number):
         print('Error ***************************')
         celebrity_full_task.retry(countdown=10)
 
-@app.task
+@celery_app.task
 def down_video_images_task(douban_ids, pool_number):
     try:
         douban.tasks.down_video_images.task(douban_ids, pool_number)
@@ -39,7 +38,7 @@ def down_video_images_task(douban_ids, pool_number):
         print('Error ***************************')
         down_images_task.retry(countdown=10)
 
-@app.task
+@celery_app.task
 def down_celebrity_images_task(douban_ids, pool_number):
     try:
         douban.tasks.down_celebrity_images.task(douban_ids, pool_number)
@@ -47,7 +46,7 @@ def down_celebrity_images_task(douban_ids, pool_number):
         print('Error ***************************')
         down_images_task.retry(countdown=10)
 
-@app.task
+@celery_app.task
 def upload_images_task(filenames, pool_number):
     from helpers import upload_qiniu_by_filenames
     from config import config
@@ -70,7 +69,7 @@ def upload_images_task(filenames, pool_number):
         upload_images_task.retry(countdown=10)
     
 
-@app.task
+@celery_app.task
 def whoosh_task(ids, pool_number, model_class):
     session = sqla['session']
 

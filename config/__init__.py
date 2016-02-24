@@ -1,6 +1,7 @@
 import os
 import sys
 
+from celery import Celery
 from whoosh import index
 from whoosh.fields import *
 from jieba.analyse import ChineseAnalyzer; analyzer = ChineseAnalyzer()
@@ -66,8 +67,14 @@ def new_process(signal, sender):
     sqla['session'] = session
 
 
+# Celery
+celery_app = Celery(
+    'tasks',
+    backend=config.get('celery', 'backend'),
+    broker=config.get('celery', 'broker')
+)
 
-
+# Whoosh
 schema = Schema(id_=ID(stored=True), title=TEXT(stored=True), summary=TEXT(stored=True, analyzer=analyzer))
 
 exists = index.exists_in("indexdir")
@@ -78,4 +85,3 @@ else:
     if not os.path.exists("indexdir"):
         os.mkdir("indexdir")
     ix = index.create_in("indexdir", schema=schema)
-
