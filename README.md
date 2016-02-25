@@ -50,3 +50,35 @@ python start.py upload-image
 ```
 python start.py whoosh
 ```
+# Doc
+
+### 代码的文件结构
+```
+.
+├── README.md
+├── alembic
+├── alembic.ini         # alembic.ini 配置文件，注意无需修改其中的'sqlalchemy.url'
+├── config              # 存放配置信息
+├── helpers             # 存放一些公共的函数 
+├── models              # model层
+├── start.py            # cmdline
+├── tasks.py            # 定义Celery任务
+└── webs                # 存放各个网站的代码
+    ├── bilibili
+    │   ├── parsers     # 定义html解析函数
+    │   └── tasks       # 调用parsers, 把解析出来的数据保存到数据库
+    └── douban
+        ├── parsers
+        └── tasks
+
+```
+
+### model
+
+### 流程
+
+### 遇到的坑
+1. SQLAlchemy 多进程问题: http://docs.sqlalchemy.org/en/rel_1_0/core/pooling.html, 而且要注意更新session, 这就是为什么config中使用一个名叫sqla的字典来保存session和engine
+2. sqlite 对 alter 支持有问题。所以alembic 如果使用sqlite 注意: https://alembic.readthedocs.org/en/latest/batch.html
+3. alembic.ini 中的配置信息，可以在alembic/env.py 中使用config.set_main_option 定义
+4. lxml 安装: http://lxml.de/installation.html
