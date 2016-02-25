@@ -15,6 +15,7 @@ from tasks import (douban_movie_base_task,
                    douban_movie_full_task,
                    douban_celebrity_full_task,
                    bilibili_animation_base_task,
+                   bilibili_animation_full_task,
                    down_video_images_task,
                    down_celebrity_images_task,
                    upload_images_task,
@@ -49,7 +50,7 @@ if __name__ == '__main__':
             ).filter(models.Video.is_detail == False):
             douban_ids.append(douban_id)
 
-        g = get_task_group_by_id(douban_ids[:100], douban_movie_full_task)
+        g = get_task_group_by_id(douban_ids, douban_movie_full_task)
 
         print('Start get movie full data fron douban:')
         async_result = g.apply_async()
@@ -58,6 +59,21 @@ if __name__ == '__main__':
         print('Preparing get animation from bilibili, please wait, about 1 min...(no progress bar)')
         bilibili_animation_base_task.delay(20).get()
         print('Preparation Completed.')
+
+        bilibili_ids = []
+        for bilibili_id, in session.query(
+                models.Animation.bilibili_id
+            ).filter(
+                (models.Animation.is_detail == False) &
+                (models.Animation.bilibili_id != None)
+            ):
+            bilibili_ids.append(bilibili_id)
+
+        g = get_task_group_by_id(bilibili_ids, bilibili_animation_full_task)
+        print('Start get animation full data fron bilibili:')
+        async_result = g.apply_async()
+        print_progress(async_result, 'get bilibili animation full data')
+
         
 
     if sys.argv[1] == 'celebrity':

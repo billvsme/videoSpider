@@ -126,9 +126,9 @@ def create_requests_and_save_datas(douban_id):
 
     # parser movie photo
     r = requests.get(douban_movie_url + str(douban_id) + '/all_photos', cookies=cookies, timeout=10)
-    data = parsers.movie_photo.start_parser(r.text)
+    photo_data = parsers.movie_photo.start_parser(r.text)
 
-    for k, v in data.items():
+    for k, v in photo_data.items():
         v = str(v)
         setattr(video, k, v)
 
@@ -136,7 +136,7 @@ def create_requests_and_save_datas(douban_id):
     session.commit()
 
     print(','.join(
-        [table_name, douban_id, video.title]
+        [table_name, douban_id, data.get('title')]
     ))
 
 

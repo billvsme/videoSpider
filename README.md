@@ -3,7 +3,7 @@
 使用requests, BeautifulSoup, gevent, SQLAlchemy, Alembic, celery
 
 # Install
-注意: 使用python3
+注意: 使用python3 <br />
 首先因为选择使用使用lxml解析html,  安装lxml库前需要安装相关c库
 ```
 sudo apt-get install libxml2-dev libxslt-dev python-dev

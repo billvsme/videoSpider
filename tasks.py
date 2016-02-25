@@ -39,6 +39,15 @@ def bilibili_animation_base_task(pool_number):
     return animation_bilibili_ids
 
 @celery_app.task
+def bilibili_animation_full_task(bilibili_ids, pool_number):
+    try:
+        bilibili.tasks.get_animations_full_data.task(bilibili_ids, pool_number)
+    except:
+        raise
+        print('Error ***************************')
+        bilibili_animation_full_task.retry(countdown=10)
+
+@celery_app.task
 def down_video_images_task(douban_ids, pool_number):
     try:
         douban.tasks.down_video_images.task(douban_ids, pool_number)
