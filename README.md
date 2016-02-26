@@ -74,8 +74,10 @@ python start.py whoosh
 ```
 
 ### model
+![model](http://7xqumk.com1.z0.glb.clouddn.com/%40%2Freadme%2Ftv-s_model.png)
 
 ### 流程
+![流程](http://7xqumk.com1.z0.glb.clouddn.com/%40%2Freadme%2Ftv-s.png)
 
 ### 遇到的坑
 1. SQLAlchemy 多进程问题: http://docs.sqlalchemy.org/en/rel_1_0/core/pooling.html, 而且要注意更新session, 这就是为什么config中使用一个名叫sqla的字典来保存session和engine
