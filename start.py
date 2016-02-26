@@ -11,6 +11,9 @@ from config import sqla; session = sqla['session']
 
 from celery import group
 from tqdm import tqdm
+from helpers import (get_video_douban_ids,
+                     get_celebrity_douban_ids,
+                     get_animation_bilibili_ids)
 from tasks import (douban_movie_base_task,
                    douban_movie_full_task,
                    douban_celebrity_full_task,
@@ -20,8 +23,7 @@ from tasks import (douban_movie_base_task,
                    down_celebrity_images_task,
                    upload_images_task,
                    whoosh_task,
-                   get_task_group_by_id
-                  )
+                   get_task_group_by_id)
 
 from celery.signals import task_success
 
@@ -44,11 +46,8 @@ if __name__ == '__main__':
         douban_movie_base_task.delay(20).get()
         print('Preparation Completed.')
         
-        douban_ids = []
-        for douban_id, in session.query(
-                models.Video.douban_id
-            ).filter(models.Video.is_detail == False):
-            douban_ids.append(douban_id)
+        expression = models.Video.is_detail == False
+        douban_ids = list(get_video_douban_ids(expression))[:100]
 
         g = get_task_group_by_id(douban_ids, douban_movie_full_task)
 
@@ -60,14 +59,9 @@ if __name__ == '__main__':
         bilibili_animation_base_task.delay(20).get()
         print('Preparation Completed.')
 
-        bilibili_ids = []
-        for bilibili_id, in session.query(
-                models.Animation.bilibili_id
-            ).filter(
-                (models.Animation.is_detail == False) &
-                (models.Animation.bilibili_id != None)
-            ):
-            bilibili_ids.append(bilibili_id)
+        expression = ((models.Animation.is_detail == False) &
+                     (models.Animation.bilibili_id != None))
+        bilibili_ids = list(get_animation_bilibili_ids(expression))[:100]
 
         g = get_task_group_by_id(bilibili_ids, bilibili_animation_full_task)
         print('Start get animation full data fron bilibili:')
@@ -79,11 +73,8 @@ if __name__ == '__main__':
     if sys.argv[1] == 'celebrity':
         print('Start get celebrity data:')
 
-        douban_ids = []
-        for douban_id, in session.query(
-                models.Celebrity.douban_id
-            ).filter(models.Celebrity.is_detail == False):
-            douban_ids.append(douban_id)
+        expression = models.Celebrity.is_detail == False
+        douban_ids = list(get_celebrity_douban_ids(expression))
 
         g = get_task_group_by_id(douban_ids, douban_celebrity_full_task)
         async_result = g.apply_async()
@@ -97,22 +88,13 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'down-image':
         print('Start down movie images(about use 10+h, 40G):')
 
-        douban_ids = []
-        for douban_id, in session.query(models.Movie.douban_id):
-            douban_ids.append(douban_id)
-
-        douban_ids = list(douban_ids)
+        douban_ids = list(get_video_douban_ids())
         g = get_task_group_by_id(douban_ids, down_video_images_task, group_size=5)
 
         async_result = g.apply_async()
         print_progress(async_result, "down video images")
 
-
-        douban_ids = []
-        for douban_id, in session.query(models.Celebrity.douban_id):
-            douban_ids.append(douban_id)
-
-        douban_ids = list(douban_ids)
+        douban_ids = list(get_celebrity_douban_ids())
         g = get_task_group_by_id(douban_ids, down_celebrity_images_task, group_size=5)
 
         async_result = g.apply_async()
