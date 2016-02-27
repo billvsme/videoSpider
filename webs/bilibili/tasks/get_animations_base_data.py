@@ -54,7 +54,7 @@ def create_requests_and_save_datas(page):
             pass
 
 def task(pool_number):
-    animation_bilibili_ids = get_animation_bilibili_ids()
+    animation_bilibili_ids = set(get_animation_bilibili_ids())
     global animation_bilibili_ids
 
     pool = Pool(pool_number)

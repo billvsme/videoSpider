@@ -47,7 +47,7 @@ if __name__ == '__main__':
         print('Preparation Completed.')
         
         expression = models.Video.is_detail == False
-        douban_ids = list(get_video_douban_ids(expression))[:100]
+        douban_ids = list(get_video_douban_ids(expression))
 
         g = get_task_group_by_id(douban_ids, douban_movie_full_task)
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
         expression = ((models.Animation.is_detail == False) &
                      (models.Animation.bilibili_id != None))
-        bilibili_ids = list(get_animation_bilibili_ids(expression))[:100]
+        bilibili_ids = list(get_animation_bilibili_ids(expression))
 
         g = get_task_group_by_id(bilibili_ids, bilibili_animation_full_task)
         print('Start get animation full data fron bilibili:')
