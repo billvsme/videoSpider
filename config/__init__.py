@@ -75,13 +75,25 @@ celery_app = Celery(
 )
 
 # Whoosh
-schema = Schema(id_=ID(stored=True), title=TEXT(stored=True), summary=TEXT(stored=True, analyzer=analyzer))
+video_schema = Schema(
+    id_=ID(stored=True),
+    title=TEXT(stored=True, analyzer=analyzer),
+    summary=TEXT(stored=True, analyzer=analyzer)
+)
+celebrity_schema = Schema(
+    id_=ID(stored=True),
+    name=TEXT(stored=True, analyzer=analyzer),
+    summary=TEXT(stored=True, analyzer=analyzer)
+)
 
 exists = index.exists_in("indexdir")
 
 if exists == True:
-    ix = index.open_dir("indexdir")
+    video_ix = index.open_dir("indexdir", indexname='video')
+    celebrity_ix = index.open_dir("indexdir", indexname='celebrity')
 else:
     if not os.path.exists("indexdir"):
         os.mkdir("indexdir")
-    ix = index.create_in("indexdir", schema=schema)
+    video_ix = index.create_in("indexdir", schema=video_schema, indexname='video')
+    celebrity_ix = index.create_in("indexdir", schema=celebrity_schema, indexname='celebrity')
+

@@ -2,7 +2,7 @@ import sys
 from whoosh.index import create_in
 from whoosh.fields import *
 from celery import group
-from config import sqla, ix, celery_app
+from config import sqla, celery_app
 from whoosh.writing import AsyncWriter
 from webs import douban, bilibili
 from gevent import monkey
@@ -87,7 +87,7 @@ def upload_images_task(filenames, pool_number):
     
 
 @celery_app.task
-def whoosh_task(ids, pool_number, model_class):
+def whoosh_task(ids, pool_number, ix, model_class):
     session = sqla['session']
 
     writer =  AsyncWriter(ix)
@@ -100,7 +100,6 @@ def whoosh_task(ids, pool_number, model_class):
             title=obj.title,
             summary=obj.summary
         )
-        print(obj.id)
 
     writer.commit()
 

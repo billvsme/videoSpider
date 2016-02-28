@@ -47,6 +47,7 @@ def create_requests_and_save_datas(bilibili_id):
                 v = str(v)
             setattr(animation, k, v)
 
+    animation.is_detail = True
     session.commit()
 
     print(','.join(
