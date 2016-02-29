@@ -21,6 +21,21 @@ pip install -r requirements.txt
 cp config/config_dev.ini config/config.ini
 vim config/config.ini
 ```
+config_dev.ini 默认配置，可以运行，最好自己修改一下（比如celery的backend）。
+```
+[database]
+database_url = sqlite:///tv.db  #数据库
+test = false                    #是否输出SQLAlchemy 信息
+[photo]
+path = ./photo                  ＃下载图片存放等位置
+[qiniu]                         #七牛的配置
+access_key = xxxx              
+secret_key = xxxx
+bucket_name = xxxx
+[celery]                        ＃celery 配置
+backend = db+sqlite:///celery_backend.sqlite     
+broker = sqla+sqlite:///celery_borker.sqlite
+```
 然后生成数据库
 ```
 alembic upgrade head
