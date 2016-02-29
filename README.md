@@ -9,13 +9,14 @@ sudo apt-get install libxml2-dev libxslt-dev python-dev
 sudo apt-get build-dep python3-lxml
 ```
 ```
-virtualenv videospider -p python3
-. videospider/bin/activate
+virtualenv tv -p python3
+. tv/bin/activate
 git clone https://github.com/billvsme/videoSpider
 cd videoSpider
 pip install -r requirements.txt
 ```
 # Usage
+注意使用python3 
 首先,设置配置config.ini
 ```
 cp config/config_dev.ini config/config.ini

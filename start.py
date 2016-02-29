@@ -31,7 +31,7 @@ session = sqla['session']
 
 @progress(
     start_info='Preparing get video from douban, \
-            please wait, about 1 min...(no progress bar)',
+please wait, about 1 min...(no progress bar)',
     end_info='Preparation Completed.')
 def douban_video_prepare():
     douban_movie_base_task.delay(20).get()
@@ -53,7 +53,7 @@ def douban_video_full_data():
 
 @progress(
         start_info='Preparing get animation from bilibili, \
-                please wait, about 1 min...(no progress bar)',
+please wait, about 1 min...(no progress bar)',
         end_info='Preparation Completed.')
 def bilibili_animation_prepare():
         bilibili_animation_base_task.delay(20).get()
