@@ -137,6 +137,8 @@ def upload_images():
     g = get_task_group_by_id(photo_filenames, upload_images_task, group_size=5)
     async_result = g.apply_async()
 
+    return async_result
+
 
 @progress(desc='whoosh index')
 def create_whoosh_index():

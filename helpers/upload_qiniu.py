@@ -18,6 +18,7 @@ def down(token, key, localfile, mime_type, delete=False):
     assert ret['key'] == key
     assert ret['hash'] == qiniu.etag(localfile)
 
+    print(localfile)
     if delete:
         os.remove(localfile)
 

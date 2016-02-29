@@ -6,6 +6,9 @@ from config import sqla, celery_app
 from whoosh.writing import AsyncWriter
 from webs import douban, bilibili
 from gevent import monkey
+from helpers import upload_qiniu_by_filenames
+from config import config
+
 monkey.patch_socket()
 
 
@@ -74,8 +77,6 @@ def down_celebrity_images_task(douban_ids, pool_number):
 
 @celery_app.task
 def upload_images_task(filenames, pool_number):
-    from helpers import upload_qiniu_by_filenames
-    from config import config
     access_key = config.get('qiniu', 'access_key')
     secret_key = config.get('qiniu', 'secret_key')
     bucket_name = config.get('qiniu', 'bucket_name')
@@ -85,7 +86,7 @@ def upload_images_task(filenames, pool_number):
             secret_key,
             bucket_name,
             '/static/img/',
-            10,
+            pool_number,
             config.get('photo', 'path'),
             filenames,
             True
