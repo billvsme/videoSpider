@@ -8,7 +8,7 @@
 sudo apt-get install libxml2-dev libxslt-dev python-dev
 sudo apt-get build-dep python3-lxml
 ```
-注意用pythone3
+注意用python3
 ```
 virtualenv tv -p python3
 . tv/bin/activate
