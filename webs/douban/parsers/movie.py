@@ -8,8 +8,9 @@ def get_celebrity_info(node):
     celebrities = [
         {
             'name': celebrity.string,
-            #'douban_url': celebrity['href'],
-            'douban_id': re.findall(r'\d+', celebrity['href'])[0] if re.match(r'/celebrity/\d+/',celebrity['href']) else None
+            'douban_id':
+            re.findall(r'\d+', celebrity['href'])[0]
+            if re.match(r'/celebrity/\d+/', celebrity['href']) else None
         } for celebrity in celebrity_nodes
     ]
 
@@ -43,7 +44,8 @@ def get_movie_info(node_dict):
         movie_info['genres'] = genres
 
     if '官方网站' in node_dict:
-        movie_info['official_site'] = node_dict['官方网站'].next_sibling.next_sibling.get('href')
+        movie_info['official_site'] = \
+                node_dict['官方网站'].next_sibling.next_sibling.get('href')
 
     if '制片国家/地区' in node_dict:
         movie_info['countries'] = [
@@ -59,20 +61,23 @@ def get_movie_info(node_dict):
             } for name in node_dict['语言'].next_sibling.string.split('/')
         ]
 
-
     if '上映日期' in node_dict:
-        movie_info['pubdate'] = node_dict['上映日期'].next_sibling.next_sibling.string
+        movie_info['pubdate'] = \
+                node_dict['上映日期'].next_sibling.next_sibling.string
 
     if '片长' in node_dict:
-        movie_info['duration'] = node_dict['片长'].next_sibling.next_sibling.string
+        movie_info['duration'] = \
+                node_dict['片长'].next_sibling.next_sibling.string
 
     if '又名' in node_dict:
         movie_info['aliases'] = [
-            name.strip() for name in node_dict['又名'].next_sibling.string.split('/')
+            name.strip()
+            for name in node_dict['又名'].next_sibling.string.split('/')
         ]
 
     if 'IMDb链接' in node_dict:
-        movie_info['imdb_number'] = node_dict['IMDb链接'].next_sibling.next_sibling.string
+        movie_info['imdb_number'] = \
+                node_dict['IMDb链接'].next_sibling.next_sibling.string
 
     if '集数' in node_dict:
         total_count = node_dict['集数'].next_sibling.string.strip()
@@ -89,9 +94,13 @@ def start_parser(text):
     s = BeautifulSoup(text, "lxml")
 
     data['title'] = s.select('#content h1 span')[0].string
-    data['summary'] = s.find(property='v:summary').string if s.find(property='v:summary') != None else None
     data['douban_rate'] = s.select('.rating_num')[0].string
-    data['thumbnail_photos'] = [photo.get('src') for photo in s.find(id='related-pic').find_all('img')]
+    data['thumbnail_photos'] = [
+        photo.get('src')
+        for photo in s.find(id='related-pic').find_all('img')
+    ]
+    if s.find(property='v:summary'):
+        data['summary'] = s.find(property='v:summary').string
 
     info_node_dict = {}
     info_nodes = s.select('.pl')

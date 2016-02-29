@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, BigInteger, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import (Column, Integer, BigInteger, String, Boolean, DateTime,
+                        ForeignKey)
 from sqlalchemy.orm import relationship
 from models import Base
 from ..medium import Medium

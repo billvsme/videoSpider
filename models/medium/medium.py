@@ -1,16 +1,21 @@
 from sqlalchemy import Table
-from sqlalchemy import Column, Integer, BigInteger, String, Boolean, DateTime, func, ForeignKey
+from sqlalchemy import (Column, Integer, BigInteger, String, Boolean,
+                        DateTime, func, ForeignKey)
 from sqlalchemy.dialects import postgresql, mysql, sqlite
 from sqlalchemy.orm import relationship
 from models import Base
 
 
-medium_country_table = Table('media_countries_association', Base.metadata,
+medium_country_table = Table(
+    'media_countries_association',
+    Base.metadata,
     Column('medium_id', Integer, ForeignKey('media.id')),
     Column('medium_country_id', Integer, ForeignKey('countries.id'))
 )
 
-medium_language_table = Table('media_languages_association', Base.metadata,
+medium_language_table = Table(
+    'media_languages_association',
+    Base.metadata,
     Column('medium_id', Integer, ForeignKey('media.id')),
     Column('medium_language_id', Integer, ForeignKey('languages.id'))
 )
@@ -42,11 +47,13 @@ class Medium(Base):
 
     bilibili_id = Column(String)
 
-    languages = relationship('Language',
+    languages = relationship(
+            'Language',
             secondary=medium_language_table,
             backref='media'
     )
-    countries = relationship('Country',
+    countries = relationship(
+            'Country',
             secondary=medium_country_table,
             backref='media'
     )
@@ -54,18 +61,18 @@ class Medium(Base):
     type = Column(String(50))
 
     created_at = Column(
-            DateTime(timezone=True),
-            server_default=func.now(),
-            nullable=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False
     )
     updated_at = Column(
-            DateTime(timezone=True),
-            server_default=func.now(),
-            onupdate=func.now(),
-            nullable=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
     )
 
     __mapper_args__ = {
-        'polymorphic_identity':'medium',
+        'polymorphic_identity': 'medium',
         'polymorphic_on': type
     }

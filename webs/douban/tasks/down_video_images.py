@@ -24,6 +24,7 @@ def create_down(str_urls, douban_id, category):
         cookies['bid'] = random_str(11)
         down(url, cookies, path, filename)
 
+
 def create_requests_and_save_datas(douban_id):
     session = sqla['session']
     cookies['bid'] = random_str(11)
@@ -36,7 +37,6 @@ def create_requests_and_save_datas(douban_id):
     thumbnail_photos_url = video.thumbnail_photos
     wallpapers_url = video.wallpapers
     thumbnail_wallpapers_url = video.thumbnail_wallpapers
-
 
     down(
         cover_url,
@@ -51,7 +51,7 @@ def create_requests_and_save_datas(douban_id):
     create_down(thumbnail_photos_url, douban_id, 'thumbnail_photos')
     create_down(wallpapers_url, douban_id, 'wallpapers')
     create_down(thumbnail_wallpapers_url, douban_id, 'thumbnail_wallpapers')
-        
+
 
 def task(douban_ids, pool_number):
     pool = Pool(pool_number)

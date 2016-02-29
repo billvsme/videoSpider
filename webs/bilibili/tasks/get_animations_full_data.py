@@ -18,16 +18,21 @@ def create_requests_and_save_datas(bilibili_id):
     session = sqla['session']
     cookies['sid'] = random_str(8)
 
-    r = requests.get(bilibili_animation_url + str(bilibili_id), cookies=cookies, timeout=10)
-
+    r = requests.get(
+            bilibili_animation_url + str(bilibili_id),
+            cookies=cookies,
+            timeout=10
+        )
 
     if r.status_code != 200:
-        return 
+        return
 
     data = parsers.animation.start_parser(r.text)
 
-    animation = session.query(models.Animation).filter_by(bilibili_id=bilibili_id).one()
-    
+    animation = session.query(models.Animation).filter_by(
+                    bilibili_id=bilibili_id
+                ).one()
+
     genre_class = models.AnimationGenre
     for k, v in data.items():
         if k == 'genres':
@@ -38,11 +43,13 @@ def create_requests_and_save_datas(bilibili_id):
                     session.commit()
                 except (IntegrityError, InvalidRequestError):
                     session.rollback()
-                    genre_obj = session.query(genre_class).filter_by(name=genre['name']).one()
+                    genre_obj = session.query(genre_class).filter_by(
+                                    name=genre['name']
+                                ).one()
                 animation.genres.append(genre_obj)
 
     for k, v in data.items():
-        if k!= 'genres':
+        if k != 'genres':
             if type(v) == list:
                 v = str(v)
             setattr(animation, k, v)
@@ -53,6 +60,7 @@ def create_requests_and_save_datas(bilibili_id):
     print(','.join(
         [bilibili_id, data.get('title')]
     ))
+
 
 def task(bilibili_ids, pool_number):
     pool = Pool(pool_number)

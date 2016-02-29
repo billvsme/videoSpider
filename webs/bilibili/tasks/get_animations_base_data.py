@@ -1,11 +1,13 @@
 import requests
 import models
-from config import sqla; session=sqla['session']
+from config import sqla
 from gevent.pool import Pool
 
 from helpers import random_str, get_animation_bilibili_ids
 from webs.bilibili import parsers
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+
+session = sqla['session']
 
 bilibili_api_url = 'http://www.bilibili.com/api_proxy'
 
@@ -26,8 +28,12 @@ def create_requests_and_save_datas(page):
         'action': 'site_season_index'
     }
 
-
-    r = requests.get(bilibili_api_url, params=params, cookies=cookies, timeout=10)
+    r = requests.get(
+            bilibili_api_url,
+            params=params,
+            cookies=cookies,
+            timeout=10
+        )
 
     if r.status_code != 200:
         return
@@ -42,7 +48,9 @@ def create_requests_and_save_datas(page):
         if bilibili_id in animation_bilibili_ids:
             continue
         try:
-            t = session.query(models.Animation).filter(models.Animation.title.like('%'+data['title']+'%')).one()
+            t = session.query(models.Animation).filter(
+                    models.Animation.title.like('%'+data['title']+'%')
+                ).one()
         except NoResultFound:
             animation = models.Animation(**data)
             session.add(animation)
@@ -53,13 +61,14 @@ def create_requests_and_save_datas(page):
         except MultipleResultsFound:
             pass
 
+
 def task(pool_number):
     animation_bilibili_ids = set(get_animation_bilibili_ids())
     global animation_bilibili_ids
 
     pool = Pool(pool_number)
-    
-    for page in range(1,100):
+
+    for page in range(1, 100):
         pool.spawn(
             create_requests_and_save_datas,
             page=page

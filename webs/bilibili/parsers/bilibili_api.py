@@ -1,5 +1,6 @@
 import json
 
+
 def start_parser(text):
     datas = []
     animation_base_datas = json.loads(text)['result']['list']
@@ -13,4 +14,3 @@ def start_parser(text):
         datas.append(data)
 
     return datas
-

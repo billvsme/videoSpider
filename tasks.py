@@ -11,6 +11,8 @@ monkey.patch_socket()
 
 '''Fix, task try ... except... don't work, because monkey.patch_socket().
 '''
+
+
 @celery_app.task
 def douban_movie_base_task(pool_number):
     movie_douban_ids = douban.tasks.get_main_movies_base_data.task(pool_number)
@@ -25,6 +27,7 @@ def douban_movie_full_task(douban_ids, pool_number):
         print('Error ***************************')
         movie_full_task.retry(countdown=10)
 
+
 @celery_app.task
 def douban_celebrity_full_task(douban_ids, pool_number):
     try:
@@ -33,10 +36,13 @@ def douban_celebrity_full_task(douban_ids, pool_number):
         print('Error ***************************')
         celebrity_full_task.retry(countdown=10)
 
+
 @celery_app.task
 def bilibili_animation_base_task(pool_number):
-    animation_bilibili_ids = bilibili.tasks.get_animations_base_data.task(pool_number)
+    animation_bilibili_ids = \
+            bilibili.tasks.get_animations_base_data.task(pool_number)
     return animation_bilibili_ids
+
 
 @celery_app.task
 def bilibili_animation_full_task(bilibili_ids, pool_number):
@@ -47,6 +53,7 @@ def bilibili_animation_full_task(bilibili_ids, pool_number):
         print('Error ***************************')
         bilibili_animation_full_task.retry(countdown=10)
 
+
 @celery_app.task
 def down_video_images_task(douban_ids, pool_number):
     try:
@@ -55,6 +62,7 @@ def down_video_images_task(douban_ids, pool_number):
         print('Error ***************************')
         down_images_task.retry(countdown=10)
 
+
 @celery_app.task
 def down_celebrity_images_task(douban_ids, pool_number):
     try:
@@ -62,6 +70,7 @@ def down_celebrity_images_task(douban_ids, pool_number):
     except:
         print('Error ***************************')
         down_images_task.retry(countdown=10)
+
 
 @celery_app.task
 def upload_images_task(filenames, pool_number):
@@ -76,7 +85,7 @@ def upload_images_task(filenames, pool_number):
             secret_key,
             bucket_name,
             '/static/img/',
-            10, 
+            10,
             config.get('photo', 'path'),
             filenames,
             True
@@ -84,13 +93,13 @@ def upload_images_task(filenames, pool_number):
     except:
         print('Error ***************************')
         upload_images_task.retry(countdown=10)
-    
+
 
 @celery_app.task
 def whoosh_task(ids, pool_number, ix, model_class):
     session = sqla['session']
 
-    writer =  AsyncWriter(ix)
+    writer = AsyncWriter(ix)
     for id_ in ids:
         obj = session.query(model_class).filter_by(id=id_).one()
         if obj.title is None or obj.summary is None:

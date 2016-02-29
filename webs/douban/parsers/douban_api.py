@@ -1,5 +1,6 @@
 import json
 
+
 def start_parser(text):
     datas = []
 

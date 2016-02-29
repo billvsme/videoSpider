@@ -6,11 +6,15 @@ def get_animation_info(node_dict):
     animation_info = {}
 
     if 'info-detail' in node_dict:
-        animation_info['pubdate'] = node_dict['info-detail'].select('.info-detail-item-date em')[0].string
-        animation_info['country'] = node_dict['info-detail'].select('.info-detail-item em')[1].string
+        animation_info['pubdate'] = node_dict['info-detail'].select(
+                                        '.info-detail-item-date em'
+                                    )[0].string
+        animation_info['country'] = node_dict['info-detail'].select(
+                                        '.info-detail-item em'
+                                    )[1].string
     if 'info-cv' in node_dict:
-        animation_info['cv'] =  [
-            node.text[1:] \
+        animation_info['cv'] = [
+            node.text[1:]
             for node in node_dict['info-cv'].select('.info-cv-item')
         ]
 
@@ -22,7 +26,9 @@ def get_animation_info(node_dict):
         ]
 
     if 'info-desc-wrp' in node_dict:
-        animation_info['summary'] = node_dict['info-desc-wrp'].find(class_='info-desc').string
+        animation_info['summary'] = node_dict['info-desc-wrp'].find(
+                                        class_='info-desc'
+                                    ).string
 
     return animation_info
 
@@ -52,6 +58,3 @@ def start_parser(text):
     data.update(get_animation_info(node_dict))
 
     return data
-
-
-    

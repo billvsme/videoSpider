@@ -1,22 +1,29 @@
 import os
 import qiniu
 from qiniu import Auth
-from gevent import monkey; monkey.patch_socket()
+from gevent import monkey
 from gevent.pool import Pool
 
 from config import config
 
+monkey.patch_socket()
+
 
 def down(token, key, localfile, mime_type, delete=False):
-    ret, info = qiniu.put_file(token, key, localfile, mime_type=mime_type, check_crc=True)
+    ret, info = qiniu.put_file(
+                    token, key, localfile,
+                    mime_type=mime_type,
+                    check_crc=True
+                )
     assert ret['key'] == key
     assert ret['hash'] == qiniu.etag(localfile)
 
-    if delete == True:
+    if delete:
         os.remove(localfile)
 
 
-def upload_qiniu_by_path(access_key, secret_key, bucket_name, key_prefix, pool_number, path, delete=False):
+def upload_qiniu_by_path(access_key, secret_key, bucket_name, key_prefix,
+                         pool_number, path, delete=False):
     q = Auth(access_key, secret_key)
     mime_type = "text/plain"
     params = {'x:a': 'a'}
@@ -43,7 +50,8 @@ def upload_qiniu_by_path(access_key, secret_key, bucket_name, key_prefix, pool_n
                 )
 
 
-def upload_qiniu_by_filenames(access_key, secret_key, bucket_name, key_prefix, pool_number, path, filenames, delete=False):
+def upload_qiniu_by_filenames(access_key, secret_key, bucket_name, key_prefix,
+                              pool_number, path, filenames, delete=False):
     q = Auth(access_key, secret_key)
     mime_type = "text/plain"
     params = {'x:a': 'a'}

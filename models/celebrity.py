@@ -5,17 +5,23 @@ from sqlalchemy.orm import relationship
 from .base import Base
 
 
-medium_director_table = Table('media_directors_association', Base.metadata,
+medium_director_table = Table(
+    'media_directors_association',
+    Base.metadata,
     Column('medium_id', Integer, ForeignKey('media.id')),
     Column('celebrity_id', Integer, ForeignKey('celebrities.id'))
 )
 
-medium_playwright_table = Table('media_playwrights_association', Base.metadata,
+medium_playwright_table = Table(
+    'media_playwrights_association',
+    Base.metadata,
     Column('medium_id', Integer, ForeignKey('media.id')),
     Column('celebrity_id', Integer, ForeignKey('celebrities.id'))
 )
 
-medium_actor_table = Table('media_actors_association', Base.metadata,
+medium_actor_table = Table(
+    'media_actors_association',
+    Base.metadata,
     Column('medium_id', Integer, ForeignKey('media.id')),
     Column('celebrity_id', Integer, ForeignKey('celebrities.id'))
 )
@@ -48,17 +54,20 @@ class Celebrity(Base):
 
     is_detail = Column(Boolean, default=False)
 
-    director_media = relationship("Medium",
+    director_media = relationship(
+        "Medium",
         secondary=medium_director_table,
         backref='directors'
     )
 
-    playwright_media = relationship("Medium",
+    playwright_media = relationship(
+        "Medium",
         secondary=medium_playwright_table,
         backref='playwrights'
     )
 
-    actor_media = relationship("Medium",
+    actor_media = relationship(
+        "Medium",
         secondary=medium_actor_table,
         backref='actors'
     )

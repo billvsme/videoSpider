@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, BigInteger, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import (Column, Integer, BigInteger, String, Boolean, DateTime,
+                        ForeignKey)
 from ..medium import Medium
 
 

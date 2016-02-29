@@ -13,18 +13,25 @@ cookies = {
         'bid': ''
 }
 
+
 def create_requests_and_save_datas(douban_id):
     session = sqla['session']
     cookies['bid'] = random_str(11)
 
-    r = requests.get(douban_celebrity_url + str(douban_id), cookies=cookies, timeout=5)
+    r = requests.get(
+            douban_celebrity_url + str(douban_id),
+            cookies=cookies,
+            timeout=5
+        )
 
     if r.status_code != 200:
         return
 
     data = parsers.celebrity.start_parser(r.text)
 
-    celebrity = session.query(models.Celebrity).filter_by(douban_id=douban_id).one()
+    celebrity = session.query(models.Celebrity).filter_by(
+                    douban_id=douban_id
+                ).one()
 
     for key in list(data.keys()):
         if type(data[key]) == list:
