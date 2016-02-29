@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import models
 from config import sqla
 

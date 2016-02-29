@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import qiniu
 from qiniu import Auth

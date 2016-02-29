@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 from whoosh.index import create_in
 from whoosh.fields import *
