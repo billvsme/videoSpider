@@ -1,7 +1,7 @@
 # videoSpider
 [![ENV](https://img.shields.io/badge/python-3.4-blue.svg)](https://github.com/billvsme/videoSpider)
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/billvsme/videoSpider/blob/master/LICENSE)
-[![Travis](https://img.shields.io/travis/billvsme/videoSipder.svg)](https://travis-ci.org/billvsme/videoSpider)
+[![Travis](https://img.shields.io/travis/billvsme/videoSpider.svg)](https://travis-ci.org/billvsme/videoSpider)  
 分布式视频信息爬虫,从豆瓣,bilibili等收集电视剧、电影、动漫、演员等信息,
 使用requests, BeautifulSoup, gevent, SQLAlchemy, Alembic, celery
 
