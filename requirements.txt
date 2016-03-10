@@ -10,3 +10,4 @@ tqdm==3.8.0
 qiniu==7.0.5
 jieba==0.37
 Whoosh==2.7.2
+pytest==2.9.0
