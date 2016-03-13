@@ -61,13 +61,13 @@ def create_requests_and_save_datas(page):
             pass
 
 
-def task(pool_number):
+def task(pool_number, pages=range(1, 100)):
     animation_bilibili_ids = set(get_animation_bilibili_ids())
     global animation_bilibili_ids
 
     pool = Pool(pool_number)
 
-    for page in range(1, 100):
+    for page in pages:
         pool.spawn(
             create_requests_and_save_datas,
             page=page
