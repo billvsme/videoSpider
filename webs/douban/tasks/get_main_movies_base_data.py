@@ -68,7 +68,7 @@ def create_requests_and_save_datas(type, tag, sort):
             ))
 
 
-def task(pool_number):
+def task(pool_number, types=types, tags_dict=tags_dict, sorts=sorts):
     video_douban_ids = set(get_video_douban_ids())
     global video_douban_ids
 
