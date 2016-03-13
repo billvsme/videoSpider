@@ -24,6 +24,7 @@ def session(request):
 
     return session
 
+
 @pytest.fixture
 def douban_movie_ids():
     return list(get_video_douban_ids())
