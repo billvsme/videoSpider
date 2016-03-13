@@ -32,11 +32,9 @@ else:
     config.read(config_dev_path)
 
 
-def create_new_engine():
-    engine = create_engine(
-            config.get('database', 'database_url'),
-            echo=config.getboolean('database', 'test') or False
-            )
+def create_new_engine(database_url=config.get('database', 'database_url'),
+                      echo=config.getboolean('database', 'test') or False):
+    engine = create_engine(database_url, echo=echo)
 
     return engine
 
