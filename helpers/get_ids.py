@@ -3,7 +3,6 @@ import models
 from config import sqla
 
 
-
 def get_video_ids(expression=True):
     session = sqla['session']
     video_query = session.query(models.Video.id).filter(expression)
