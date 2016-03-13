@@ -38,6 +38,7 @@ def create_new_engine(database_url=config.get('database', 'database_url'),
 
     return engine
 
+
 engine = create_new_engine()
 
 Session = sessionmaker(bind=engine)
@@ -56,14 +57,29 @@ sqla = {
 }
 
 
+def create_new_sqla(database_url=config.get('database', 'database_url'),
+                    echo=config.getboolean('database', 'test') or False):
+    engine = create_new_engine(database_url, echo)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    sqla['engine'] = engine
+    sqla['session'] = session
+
+    return sqla
+
+
 @worker_process_init.connect
 def new_process(signal, sender):
+    '''
     engine = create_new_engine()
     Session = sessionmaker(bind=engine)
     session = Session()
 
     sqla['engine'] = engine
     sqla['session'] = session
+    '''
+    create_new_sqla()
 
 
 # Celery

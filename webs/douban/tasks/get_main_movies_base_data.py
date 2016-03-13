@@ -8,8 +8,6 @@ from helpers import random_str, get_video_douban_ids
 from webs.douban import parsers
 from config import sqla
 
-session = sqla['session']
-
 
 types = ['movie', 'tv']
 sorts = ['recommend', 'time', 'rank']

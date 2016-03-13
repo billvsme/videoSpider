@@ -8,8 +8,6 @@ from helpers import random_str, get_animation_bilibili_ids
 from webs.bilibili import parsers
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
-session = sqla['session']
-
 bilibili_api_url = 'http://www.bilibili.com/api_proxy'
 
 cookies = {

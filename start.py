@@ -26,7 +26,6 @@ from tasks import (douban_movie_base_task,
                    get_task_group_by_id)
 
 monkey.patch_socket()
-session = sqla['session']
 
 
 @progress(
