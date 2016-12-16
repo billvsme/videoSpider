@@ -63,3 +63,9 @@ config.ini
 
 # vim
 *.swp
+
+*.sqlite
+*.db
+*.swp
+*.un~
+indexdir/
