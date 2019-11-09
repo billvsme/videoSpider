@@ -1,7 +1,7 @@
 SQLAlchemy==1.0.11
 alembic==0.8.4
 gevent==1.1b5
-requests==2.7.0
+requests==2.20.0
 beautifulsoup4==4.4.1
 lxml==3.5.0
 gipc==0.6.0
