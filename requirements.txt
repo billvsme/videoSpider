@@ -5,7 +5,7 @@ requests==2.7.0
 beautifulsoup4==4.4.1
 lxml==3.5.0
 gipc==0.6.0
-celery==3.1.20
+celery==5.2.2
 tqdm==3.8.0
 qiniu==7.0.5
 jieba==0.37
